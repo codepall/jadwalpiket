@@ -25,10 +25,8 @@
         .checkbox-group label { background: rgba(255,255,255,0.03); padding: 8px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; border: 1px solid var(--glass-border); flex: 1; min-width: 100px; justify-content: center; }
         .checkbox-group label:hover { background: rgba(255,255,255,0.1); }
         
-        /* RESPONSIVE JADWAL EDITOR */
         .hari-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        .hari-header { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; font-weight: 700; color: #60a5fa; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;}
-        .hari-header button { width: 100%; }
+        .hari-header { font-weight: 700; color: #60a5fa; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; font-size: 1.1rem; }
         
         .siswa-item { display: flex; flex-direction: column; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 10px; gap: 12px; border: 1px solid rgba(255,255,255,0.03); }
         .siswa-info { font-size: 0.95rem; line-height: 1.4; }
@@ -41,8 +39,6 @@
         .add-siswa-form button { margin: 0; background: #10b981; }
 
         @media (min-width: 600px) {
-            .hari-header { flex-direction: row; justify-content: space-between; align-items: center; }
-            .hari-header button { width: auto; }
             .siswa-item { flex-direction: row; align-items: center; }
             .siswa-info { flex: 1; }
             .siswa-actions { width: auto; }
@@ -62,9 +58,13 @@
         
         <div class="card">
             <h3>Manajemen Jadwal Piket</h3>
-            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px; margin-bottom: 20px;">Pindahkan siswa, hapus, atau langsung Salin Pengumuman.</p>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px; margin-bottom: 20px;">Atur jadwal atau salin teks pengumuman untuk jadwal aktif selanjutnya.</p>
+            
+            <button onclick="salinPengumumanSelanjutnya()" style="margin-bottom: 25px; background: #3b82f6; font-size: 1rem; padding: 15px;">📋 Salin Pengumuman Jadwal Selanjutnya</button>
+            
             <div id="jadwalEditorContainer">Memuat jadwal...</div>
-            <button onclick="simpanJadwal()" style="margin-top: 15px; background: #10b981; font-size: 1rem; padding: 15px;">Simpan Perubahan Jadwal Ke Database</button>
+            
+            <button onclick="simpanJadwal()" style="margin-top: 15px; background: #10b981; font-size: 1rem; padding: 15px;">💾 Simpan Perubahan Jadwal Ke Database</button>
         </div>
 
         <div class="card">
@@ -125,24 +125,90 @@
         const db = firebase.firestore();
 
         let jadwalLokal = [];
+        let hariLiburSpesifik = [];
+        let tanggalMulaiSiklus = '2026-07-20'; 
+        let liburDefault = [0]; 
 
         const defaultSiklus = [
-            [{nama: "Ahmad Naufal Al Faruq", kelas: "9H"}, {nama: "Maya Adelia Andi Putri", kelas: "8G"}, {nama: "Daud Anang Yusuf", kelas: "8E"}],
-            [{nama: "Terbit Pancasona", kelas: "8F"}, {nama: "Zefanya Cheryl Putri Elsinta", kelas: "8E"}, {nama: "Anindya Cindy Kirana", kelas: "9A"}],
-            [{nama: "Lionel Rafael Ndori Wangge", kelas: "8E"}, {nama: "Sarah Nur Aini", kelas: "9G"}, {nama: "Exel Diandra Anam", kelas: "8G"}],
-            [{nama: "Bagas Praditya Yanuar Sumarsono", kelas: "9H"}, {nama: "Zahra Wahyu Puspitasari", kelas: "8H"}, {nama: "Renita Dwi Cahaya", kelas: "8I"}],
-            [{nama: "Shyailla Putri Setyadika", kelas: "8E"}, {nama: "Kireina Cahya Liveria", kelas: "9C"}, {nama: "Felicia Imanuela Cahyani", kelas: "9I"}],
-            [{nama: "Alhena Khanzaa Prasetya", kelas: "8F"}, {nama: "Assyifa Sukma Pradah", kelas: "9I"}, {nama: "Khanza Ailen Tatiara Agata", kelas: "8D"}],
-            [{nama: "Ikhmal Adillah Arfa", kelas: "9H"}, {nama: "Nathania Puspitasari", kelas: "8E"}, {nama: "Angelina Putri Pramesti", kelas: "9G"}],
-            [{nama: "Adrian Faaris Atmawidjaya", kelas: "8F"}, {nama: "Meilda Ayu Pramesti Umboyono", kelas: "9E"}, {nama: "Thalita Zalva Almira", kelas: "9G"}],
-            [{nama: "Cesario Nartha Setiawan", kelas: "8E"}, {nama: "Sheren Nevrina Zahra", kelas: "9H"}, {nama: "Aisyah Qilyatul Aulia", kelas: "9G"}],
-            [{nama: "Azzam Putra Nayo", kelas: "8G"}, {nama: "Anindhita Aurora Salsabila Surya Putri", kelas: "9F"}, {nama: "Kirana Zahra Syafa Rahma", kelas: "9G"}]
+            [{nama: "Naufal", kelas: "9H"}, {nama: "Maya", kelas: "8G"}, {nama: "Daud", kelas: "8E"}],
+            [{nama: "Pancasona", kelas: "8F"}, {nama: "Zefanya", kelas: "8E"}, {nama: "Cindy", kelas: "9A"}],
+            [{nama: "Lionel", kelas: "8E"}, {nama: "Sarah", kelas: "9G"}, {nama: "Exel", kelas: "8G"}],
+            [{nama: "Bagas", kelas: "9H"}, {nama: "Zahra", kelas: "8H"}, {nama: "Renita", kelas: "8I"}],
+            [{nama: "Shyailla", kelas: "8E"}, {nama: "Kireina", kelas: "9C"}, {nama: "Felicia", kelas: "9I"}],
+            [{nama: "Alhena", kelas: "8F"}, {nama: "Assyifa", kelas: "9I"}, {nama: "Agata", kelas: "8D"}],
+            [{nama: "Ikhmal", kelas: "9H"}, {nama: "Nathania", kelas: "8E"}, {nama: "Angelina", kelas: "9G"}],
+            [{nama: "Atma", kelas: "8F"}, {nama: "Meilda", kelas: "9E"}, {nama: "Thalita", kelas: "9G"}],
+            [{nama: "Cesario", kelas: "8E"}, {nama: "Sheren", kelas: "9H"}, {nama: "Aulia", kelas: "9G"}],
+            [{nama: "Azzam", kelas: "8G"}, {nama: "Anindhita", kelas: "9F"}, {nama: "Syafa", kelas: "9G"}]
         ];
 
         firebase.auth().onAuthStateChanged((user) => {
             if (!user) window.location.href = "/login.html"; 
             else { loadPengaturan(); loadLiburSpesifik(); loadJadwalData(); }
         });
+
+        function getLocalYYYYMMDD(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function isHariLibur(date) {
+            return liburDefault.includes(date.getDay()) || hariLiburSpesifik.includes(getLocalYYYYMMDD(date));
+        }
+
+        function hitungHariEfektif(targetDate) {
+            const startDate = new Date(tanggalMulaiSiklus);
+            startDate.setHours(0,0,0,0);
+            targetDate.setHours(0,0,0,0);
+            
+            let current = new Date(startDate);
+            let indexJadwal = 0;
+
+            while (current <= targetDate) {
+                if (!liburDefault.includes(current.getDay())) {
+                    indexJadwal++; 
+                }
+                current.setDate(current.getDate() + 1);
+            }
+            return (indexJadwal - 1) % (jadwalLokal.length || 10);
+        }
+
+        function salinPengumumanSelanjutnya() {
+            const now = new Date();
+            let targetDate = new Date(now);
+            
+            // Geser ke besok jika sudah melewati jam 08.00 pagi
+            if (now.getHours() >= 8) {
+                targetDate.setDate(now.getDate() + 1);
+            }
+
+            // Terus maju jika hari tersebut libur
+            while(isHariLibur(targetDate)) {
+                targetDate.setDate(targetDate.getDate() + 1);
+            }
+
+            const indexHariIni = hitungHariEfektif(targetDate);
+            if(indexHariIni < 0) return alert("Siklus belum dimulai! Periksa Tanggal Awal Siklus.");
+            
+            const siswaHariIni = jadwalLokal[indexHariIni];
+            if(!siswaHariIni || siswaHariIni.length === 0) return alert("Jadwal kosong pada hari tersebut.");
+
+            let listSiswa = "";
+            siswaHariIni.forEach((s, idx) => {
+                listSiswa += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`;
+            });
+
+            const opsiTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
+            const tanggalFormat = targetDate.toLocaleDateString('id-ID', opsiTanggal);
+
+            const template = `📢 *PENGUMUMAN*\n${tanggalFormat}\nPiket salam ke seluruh siswa:\n\n${listSiswa}\n*CATATAN:*\n- Memakai Jas OSIS\n- Datang pagi *sebelum pukul 06.35*\n- Berjabat tangan (bukan tos) kepada seluruh siswa, baik kelas 7, 8, ataupun 9.`;
+            
+            navigator.clipboard.writeText(template).then(() => {
+                alert("Pengumuman untuk " + tanggalFormat + " berhasil disalin!");
+            }).catch(() => alert("Gagal menyalin pengumuman."));
+        }
 
         function loadJadwalData() {
             db.collection("jadwal").doc("data").get().then((doc) => {
@@ -158,10 +224,7 @@
             
             jadwalLokal.forEach((hariArr, i) => {
                 let html = `<div class="hari-card">
-                    <div class="hari-header">
-                        <span style="font-size: 1.1rem;">Siklus Hari Ke-${i + 1}</span>
-                        <button onclick="salinPengumuman(${i})" class="btn-icon" style="background:#3b82f6; font-weight:bold;">📋 Salin Pengumuman</button>
-                    </div>
+                    <div class="hari-header">Siklus Hari Ke-${i + 1}</div>
                     <div id="listHari${i}">`;
                 
                 hariArr.forEach((siswa, j) => {
@@ -181,25 +244,13 @@
                 
                 html += `</div>
                     <div class="add-siswa-form">
-                        <input type="text" id="addNama${i}" placeholder="Nama Lengkap Siswa">
+                        <input type="text" id="addNama${i}" placeholder="Nama Pendek Siswa">
                         <input type="text" id="addKelas${i}" placeholder="Kelas" style="text-transform:uppercase;">
                         <button onclick="tambahSiswa(${i})">+ Tambah</button>
                     </div>
                 </div>`;
                 container.innerHTML += html;
             });
-        }
-
-        function salinPengumuman(hari) {
-            let siswaHariIni = jadwalLokal[hari];
-            let listSiswa = "";
-            siswaHariIni.forEach((s, idx) => {
-                listSiswa += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`;
-            });
-            const template = `📢 *PENGUMUMAN*\nPiket salam ke seluruh siswa:\n\n${listSiswa}\n*CATATAN:*\n- Memakai Jas OSIS\n- Datang pagi *sebelum pukul 06.35*\n- Berjabat tangan (bukan tos) kepada seluruh siswa, baik kelas 7, 8, ataupun 9.`;
-            navigator.clipboard.writeText(template).then(() => {
-                alert("Pengumuman Hari Ke-" + (hari + 1) + " berhasil disalin!");
-            }).catch(() => alert("Gagal menyalin. Pastikan browser mengizinkan akses clipboard."));
         }
 
         function pindahSiswa(dariHari, indexSiswa, keHariStr) {
@@ -225,17 +276,22 @@
 
         function simpanJadwal() {
             db.collection("jadwal").doc("data").set({ siklus: jadwalLokal })
-              .then(() => alert("Jadwal piket berhasil diperbarui di database!"));
+              .then(() => alert("Jadwal piket berhasil diperbarui di database!"))
+              .catch((error) => alert("Gagal menyimpan! Pastikan Rules Firestore kamu benar.\n\nError: " + error.message));
         }
 
         function loadPengaturan() {
             db.collection("pengaturan").doc("sistem").get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    if (data.tanggalMulai) document.getElementById('tglSiklus').value = data.tanggalMulai;
+                    if (data.tanggalMulai) {
+                        tanggalMulaiSiklus = data.tanggalMulai;
+                        document.getElementById('tglSiklus').value = tanggalMulaiSiklus;
+                    }
                     if (data.hariLiburDefault) {
+                        liburDefault = data.hariLiburDefault;
                         const checkboxes = document.querySelectorAll('#defaultDaysForm input');
-                        checkboxes.forEach(cb => cb.checked = data.hariLiburDefault.includes(parseInt(cb.value)));
+                        checkboxes.forEach(cb => cb.checked = liburDefault.includes(parseInt(cb.value)));
                     }
                 }
             });
@@ -245,7 +301,10 @@
             const checkboxes = document.querySelectorAll('#defaultDaysForm input:checked');
             const selectedDays = Array.from(checkboxes).map(cb => parseInt(cb.value));
             db.collection("pengaturan").doc("sistem").set({ hariLiburDefault: selectedDays }, { merge: true })
-              .then(() => alert("Hari libur mingguan berhasil disimpan!"));
+              .then(() => {
+                  liburDefault = selectedDays;
+                  alert("Hari libur mingguan berhasil disimpan!");
+              });
         }
 
         async function tambahLibur() {
@@ -277,10 +336,13 @@
         function loadLiburSpesifik() {
             const list = document.getElementById('listLibur');
             list.innerHTML = '<li style="color:#94a3b8; justify-content:center;">Memuat...</li>';
+            hariLiburSpesifik = []; // Reset local array
+            
             db.collection("hari_libur").orderBy("tanggal").get().then((querySnapshot) => {
                 list.innerHTML = '';
                 if(querySnapshot.empty) list.innerHTML = '<li style="color:#94a3b8; justify-content:center;">Belum ada libur khusus</li>';
                 querySnapshot.forEach((doc) => {
+                    hariLiburSpesifik.push(doc.id); // Simpan ke variable lokal
                     const li = document.createElement('li');
                     li.innerHTML = `${doc.id} <span style="color:#f87171; cursor:pointer; font-size:0.85rem; font-weight:bold; padding: 5px 10px; background: rgba(239, 68, 68, 0.1); border-radius: 4px;" onclick="hapusLibur('${doc.id}')">Hapus</span>`;
                     list.appendChild(li);
@@ -298,7 +360,10 @@
             const tgl = document.getElementById('tglSiklus').value;
             if(!tgl) return alert("Pilih tanggal!");
             db.collection("pengaturan").doc("sistem").set({ tanggalMulai: tgl }, { merge: true })
-              .then(() => alert("Tanggal Awal Siklus berhasil dikalibrasi!"));
+              .then(() => {
+                  tanggalMulaiSiklus = tgl;
+                  alert("Tanggal Awal Siklus berhasil dikalibrasi!");
+              });
         }
 
         function logout() {
