@@ -3,62 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Piket Salam</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Jadwal Piket Salam Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-color: #0f172a; --glass-bg: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --accent-blue: #3b82f6; --accent-glow: rgba(59, 130, 246, 0.5); --text-main: #f8fafc; --text-muted: #94a3b8; }
-        body { margin: 0; min-height: 100vh; background: linear-gradient(135deg, #020617, #0f172a, #1e3a8a); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-main); display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .container { background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px; width: 100%; max-width: 450px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px var(--accent-glow); text-align: center; }
-        h1 { font-size: 1.5rem; margin-bottom: 5px; font-weight: 800; }
-        .status-badge { display: inline-block; background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 25px; border: 1px solid rgba(59, 130, 246, 0.3); }
-        .date-display { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 20px; }
-        .piket-list { list-style: none; padding: 0; margin: 0; }
-        .piket-item { background: rgba(255, 255, 255, 0.05); margin-bottom: 12px; padding: 16px; border-radius: 12px; font-weight: 600; font-size: 1.1rem; border: 1px solid rgba(255, 255, 255, 0.05); }
-        .class-badge { font-size: 0.8rem; color: #cbd5e1; display: block; margin-top: 4px; font-weight: 400; }
-        .footer-link { margin-top: 30px; display: block; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+        :root {
+            --bg-deep: #020617;
+            --bg-gradient: linear-gradient(135deg, #020617, #0f172a, #1e3a8a);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-blue: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; min-height: 100vh;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-main);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient glowing orbs */
+        body::before, body::after {
+            content: ""; position: absolute; border-radius: 50%; filter: blur(100px); z-index: -1;
+        }
+        body::before {
+            width: 400px; height: 400px; background: rgba(59, 130, 246, 0.15);
+            top: -100px; left: -100px;
+        }
+        body::after {
+            width: 300px; height: 300px; background: rgba(14, 165, 233, 0.15);
+            bottom: -50px; right: -50px;
+        }
+
+        .container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 40px;
+            width: 100%; max-width: 480px;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        h1 { font-size: 1.75rem; margin-bottom: 8px; font-weight: 800; letter-spacing: -0.5px; }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .date-display { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 30px; font-weight: 500; }
+
+        .piket-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+
+        .piket-item {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            padding: 18px;
+            border-radius: 16px;
+            font-weight: 700; font-size: 1.1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column; gap: 4px;
+        }
+
+        .piket-item:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .class-badge { font-size: 0.85rem; color: #94a3b8; font-weight: 500; }
+
+        .footer-link {
+            margin-top: 35px; display: inline-block;
+            color: var(--text-muted); text-decoration: none;
+            font-size: 0.9rem; font-weight: 500;
+            transition: color 0.2s;
+        }
+        .footer-link:hover { color: var(--accent-blue); }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Jadwal Piket Salam</h1>
         <div id="statusBadge" class="status-badge">Memuat Data...</div>
-        <div id="dateDisplay" class="date-display"></div>
+        <div id="dateDisplay" class="date-display">Tunggu sebentar</div>
         <ul class="piket-list" id="piketList"></ul>
-        <a href="/login.html" class="footer-link">Login Admin</a>
+        <a href="/login.html" class="footer-link">Login Administrator &rarr;</a>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
-        /* MASUKKAN FIREBASE CONFIG KAMU DI SINI */
         const firebaseConfig = {
             apiKey: "AIzaSyD6qO-GfQupUahS-vWmORIMMJAIconbuow",
             authDomain: "jadwalpiket-cd023.firebaseapp.com",
             projectId: "jadwalpiket-cd023",
             storageBucket: "jadwalpiket-cd023.firebasestorage.app",
             messagingSenderId: "1046765391875",
-            appId: "1:1046765391875:web:81569f60292879260dbe36"
+            appId: "1:1046765391875:web:81569f60292879260dbe36",
+            measurementId: "G-TH3XFWJ03N"
         };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        const jadwalMentah = [
-            [{nama: "Adrian Faaris Atmawidjaya", kelas: "8F"}, {nama: "Alhena Khanzaa Prasetya", kelas: "8F"}, {nama: "Maya Adelia Andi Putri", kelas: "8G"}],
-            [{nama: "Terbit Pancasona", kelas: "8F"}, {nama: "Zahra Wahyu Puspitasari", kelas: "8H"}, {nama: "Azzam Putra Nayo", kelas: "8G"}],
-            [{nama: "Daud Anang Yusuf", kelas: "8E"}, {nama: "Shyailla Putri Setyadika", kelas: "8E"}, {nama: "Cesario Nartha Setiawan", kelas: "8E"}],
-            [{nama: "Lionel Rafael Ndori Wangge", kelas: "8E"}, {nama: "Nathania Puspitasari", kelas: "8E"}, {nama: "Zefanya Cheryl Putri Elsinta", kelas: "8E"}],
-            [{nama: "Khanza Ailen Tatiara Agata", kelas: "8D"}, {nama: "Exel Diandra Anam", kelas: "8G"}, {nama: "Renita Dwi Cahaya", kelas: "8i"}],
-            [{nama: "Meilda Ayu Pramesti Umboyono", kelas: "9E"}, {nama: "Anindya Cindy Kirana", kelas: "9A"}, {nama: "Angelina Putri Pramesti", kelas: "9g"}],
-            [{nama: "Ahmad Naufal Al Faruq", kelas: "9H"}, {nama: "Aisyah Qilyatul Aulia", kelas: "9g"}, {nama: "Bagas Praditya Yanuar Sumarsono", kelas: "9H"}],
-            [{nama: "Felicia Imanuela Cahyani", kelas: "9i"}, {nama: "Assyifa Sukma Pradah", kelas: "9i"}, {nama: "Ikhmal Adillah Arfa", kelas: "9H"}],
-            [{nama: "Kirana Zahra Syafa Rahma", kelas: "9g"}, {nama: "Sarah Nur Aini", kelas: "9g"}, {nama: "Thalita Zalva Almira", kelas: "9g"}],
-            [{nama: "Anindhita Aurora Salsabila Surya Putri", kelas: "9F"}, {nama: "Kireina Cahya Liveria", "kelas": "9C"}, {nama: "Sheren Nevrina Zahra", kelas: "9H"}]
-        ];
-
-        let hariLibur = [];
-        let tanggalMulaiSiklus = '2026-07-20'; // Default
-        let liburDefault = [0]; // Default: 0 (Minggu). Angka 1-6 mewakili Senin-Sabtu.
+        let jadwalSiklus = [];
+        let hariLiburSpesifik = [];
+        let tanggalMulaiSiklus = '2026-07-20'; 
+        let liburDefault = [0]; 
 
         function getLocalYYYYMMDD(date) {
             const y = date.getFullYear();
@@ -67,27 +140,24 @@
             return `${y}-${m}-${d}`;
         }
 
-        // Mengambil semua pengaturan dan daftar libur khusus sekaligus
         Promise.all([
             db.collection("pengaturan").doc("sistem").get(),
-            db.collection("hari_libur").get()
-        ]).then(([pengaturanDoc, liburSnapshot]) => {
+            db.collection("hari_libur").get(),
+            db.collection("jadwal").doc("data").get()
+        ]).then(([pengaturanDoc, liburSnapshot, jadwalDoc]) => {
             if (pengaturanDoc.exists) {
                 const data = pengaturanDoc.data();
                 if (data.tanggalMulai) tanggalMulaiSiklus = data.tanggalMulai;
                 if (data.hariLiburDefault) liburDefault = data.hariLiburDefault;
             }
-            liburSnapshot.forEach(doc => hariLibur.push(doc.id));
+            liburSnapshot.forEach(doc => hariLiburSpesifik.push(doc.id));
+            if (jadwalDoc.exists && jadwalDoc.data().siklus) {
+                jadwalSiklus = jadwalDoc.data().siklus;
+            }
             renderJadwal();
         });
 
-        function isHariLibur(date) {
-            const day = date.getDay(); // 0 = Minggu, 1 = Senin, dst
-            // Cek apakah hari ini masuk di pengaturan libur mingguan ATAU masuk di tanggal merah khusus
-            if (liburDefault.includes(day)) return true;
-            return hariLibur.includes(getLocalYYYYMMDD(date));
-        }
-
+        // Menghitung hari efektif (Hanya Libur Default yang menghentikan putaran)
         function hitungHariEfektif(targetDate) {
             const startDate = new Date(tanggalMulaiSiklus);
             startDate.setHours(0,0,0,0);
@@ -97,12 +167,12 @@
             let indexJadwal = 0;
 
             while (current <= targetDate) {
-                if (!isHariLibur(current)) {
+                if (!liburDefault.includes(current.getDay())) {
                     indexJadwal++; 
                 }
                 current.setDate(current.getDate() + 1);
             }
-            return (indexJadwal - 1) % 10;
+            return (indexJadwal - 1) % (jadwalSiklus.length || 10);
         }
 
         function renderJadwal() {
@@ -122,18 +192,36 @@
             const piketList = document.getElementById('piketList');
             piketList.innerHTML = '';
 
-            if (isHariLibur(targetDate)) {
-                piketList.innerHTML = '<li class="piket-item" style="color: #60a5fa; text-align: center;">Tidak ada jadwal piket<br><span class="class-badge">Hari Libur</span></li>';
+            // 1. Cek jika hari ini adalah Libur Default (Minggu dll)
+            if (liburDefault.includes(targetDate.getDay())) {
+                piketList.innerHTML = '<li class="piket-item" style="color: #60a5fa; text-align: center; border-color: rgba(59,130,246,0.3);">Tidak Ada Jadwal<br><span class="class-badge">Hari Libur Rutin</span></li>';
+                return;
+            }
+
+            // 2. Cek jika hari ini adalah Libur Khusus (Bonus)
+            if (hariLiburSpesifik.includes(getLocalYYYYMMDD(targetDate))) {
+                piketList.innerHTML = '<li class="piket-item" style="color: #34d399; text-align: center; border-color: rgba(52,211,153,0.3);">Bonus Libur!<br><span class="class-badge" style="color: #6ee7b7;">Jadwal hari ini ditiadakan</span></li>';
+                return;
+            }
+
+            if (jadwalSiklus.length === 0) {
+                piketList.innerHTML = '<li class="piket-item" style="text-align: center;">Jadwal belum diatur admin</li>';
                 return;
             }
 
             const indexHariIni = hitungHariEfektif(targetDate);
             if(indexHariIni < 0) {
-                piketList.innerHTML = '<li class="piket-item" style="text-align: center;">Siklus belum dimulai</li>';
+                piketList.innerHTML = '<li class="piket-item" style="text-align: center;">Siklus jadwal belum dimulai</li>';
                 return;
             }
 
-            jadwalMentah[indexHariIni].forEach(siswa => {
+            const siswaHariIni = jadwalSiklus[indexHariIni];
+            if (!siswaHariIni || siswaHariIni.length === 0) {
+                piketList.innerHTML = '<li class="piket-item" style="text-align: center; color: #94a3b8;">Kosong (Tidak ada siswa di hari ini)</li>';
+                return;
+            }
+
+            siswaHariIni.forEach(siswa => {
                 const li = document.createElement('li');
                 li.className = 'piket-item';
                 li.innerHTML = `${siswa.nama} <span class="class-badge">Kelas ${siswa.kelas}</span>`;
