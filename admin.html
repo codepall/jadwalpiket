@@ -65,7 +65,7 @@
     <div class="container">
         <h1>Admin Dashboard</h1>
         
-        <!-- PANEL DIAGNOSTIK DATABASE -->
+        <!-- PANEL DIAGNOSTIK KONEKSI -->
         <div id="dbStatus" style="background: rgba(255,255,255,0.1);">⏳ Sedang mengecek koneksi ke database Firebase...</div>
 
         <div class="card">
@@ -75,7 +75,6 @@
             <div id="jadwalEditorContainer">Memuat jadwal...</div>
         </div>
 
-        <!-- Bagian Pengaturan Libur ditiadakan sejenak di snippet ini agar fokus ke perbaikan, tapi fungsinya tetap sama di bawah -->
         <div class="card">
             <h3>Hari Libur Mingguan (Default)</h3>
             <div class="checkbox-group" id="defaultDaysForm">
@@ -88,6 +87,26 @@
                 <label><input type="checkbox" value="0"> Minggu</label>
             </div>
             <button onclick="simpanLiburDefault()" style="margin-bottom:0;">Simpan Libur Mingguan</button>
+        </div>
+
+        <div class="card">
+            <h3>Atur Libur Khusus / Tanggal Merah</h3>
+            <div class="flex-row" style="flex-wrap: wrap;">
+                <input type="date" id="tglMulai" style="flex: 1; min-width: 140px; margin-bottom: 0;">
+                <span style="color:#94a3b8; text-align: center;">s/d</span>
+                <input type="date" id="tglAkhir" style="flex: 1; min-width: 140px; margin-bottom: 0;">
+            </div>
+            <button onclick="tambahLibur()" style="margin-top: 15px;">Simpan Tanggal Merah</button>
+            <h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 0.95rem;">Daftar Tanggal Merah:</h4>
+            <ul id="listLibur" class="list-libur"></ul>
+        </div>
+
+        <div class="card">
+            <h3>Kalibrasi Awal Siklus</h3>
+            <div class="flex-row">
+                <input type="date" id="tglSiklus" style="margin-bottom: 0;">
+                <button onclick="ubahTglSiklus()" style="margin-bottom: 0; width: auto; padding: 0 20px;">Terapkan</button>
+            </div>
         </div>
 
         <button onclick="logout()" class="btn-danger" style="margin-top: 20px; padding: 15px;">Keluar / Logout</button>
@@ -140,22 +159,21 @@
             }
         });
 
-        // FUNGSI DIAGNOSTIK KONEKSI
         function cekKoneksiDatabase() {
             const statusDiv = document.getElementById('dbStatus');
             statusDiv.innerHTML = "⏳ Menguji akses tulis ke Firebase...";
-            statusDiv.style.background = "rgba(202, 138, 4, 0.2)"; // Kuning
+            statusDiv.style.background = "rgba(202, 138, 4, 0.2)";
             statusDiv.style.color = "#facc15";
 
             db.collection("jadwal").doc("ping_test").set({ waktu: firebase.firestore.FieldValue.serverTimestamp() })
                 .then(() => {
-                    statusDiv.innerHTML = "✅ STATUS DATABASE AMAN!<br>Jadwal sudah bisa tersimpan permanen.";
+                    statusDiv.innerHTML = "✅ STATUS DATABASE AMAN!<br>Semua aturan (Rules) sudah benar.";
                     statusDiv.style.background = "rgba(16, 185, 129, 0.2)";
                     statusDiv.style.color = "#34d399";
                     statusDiv.style.border = "1px solid #10b981";
                 })
                 .catch((error) => {
-                    statusDiv.innerHTML = "❌ DATABASE DIBLOKIR FIREBASE!<br><span style='font-weight:normal;'>Firebase menolak penyimpanan. Kemungkinan karena 'Rules' belum di-Publish atau salah letak.</span><br><br>Pesan Error Asli: <i>" + error.message + "</i>";
+                    statusDiv.innerHTML = "❌ DATABASE DIBLOKIR FIREBASE!<br>Pesan: " + error.message;
                     statusDiv.style.background = "rgba(239, 68, 68, 0.2)";
                     statusDiv.style.color = "#f87171";
                     statusDiv.style.border = "1px solid #ef4444";
@@ -213,8 +231,17 @@
 
         function loadJadwalData() {
             db.collection("jadwal").doc("data").get().then((doc) => {
-                if (doc.exists && doc.data().siklus) jadwalLokal = doc.data().siklus;
-                else jadwalLokal = defaultSiklus;
+                // LOGIKA PEMBACAAN DATA JADWAL YANG BENAR
+                if (doc.exists && doc.data().siklus) {
+                    const dataSiklus = doc.data().siklus;
+                    if (typeof dataSiklus === 'string') {
+                        jadwalLokal = JSON.parse(dataSiklus);
+                    } else {
+                        jadwalLokal = defaultSiklus;
+                    }
+                } else {
+                    jadwalLokal = defaultSiklus;
+                }
                 renderJadwalEditor();
             });
         }
@@ -250,11 +277,15 @@
             autoSaveTimeout = setTimeout(() => { toast.classList.remove('show'); }, 2500);
         }
 
+        // --- SISTEM AUTO SAVE YANG SUDAH DIPERBAIKI ---
         function autoSaveKeDatabase() {
-            db.collection("jadwal").doc("data").set({ siklus: jadwalLokal })
+            // MENGUBAH JADWAL MENJADI JSON STRING
+            const jsonString = JSON.stringify(jadwalLokal);
+            
+            db.collection("jadwal").doc("data").set({ siklus: jsonString })
               .then(() => { tampilkanToast(); })
               .catch((error) => {
-                  alert("Gagal Auto-Save! Database masih memblokir.\n\nError: " + error.message);
+                  alert("Gagal Auto-Save! \n\nError: " + error.message);
               });
         }
 
@@ -284,6 +315,10 @@
             db.collection("pengaturan").doc("sistem").get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
+                    if (data.tanggalMulai) {
+                        tanggalMulaiSiklus = data.tanggalMulai;
+                        document.getElementById('tglSiklus').value = tanggalMulaiSiklus;
+                    }
                     if (data.hariLiburDefault) {
                         liburDefault = data.hariLiburDefault;
                         const checkboxes = document.querySelectorAll('#defaultDaysForm input');
@@ -300,6 +335,65 @@
               .then(() => {
                   liburDefault = selectedDays;
                   alert("Hari libur mingguan berhasil disimpan!");
+              });
+        }
+
+        async function tambahLibur() {
+            const start = document.getElementById('tglMulai').value;
+            let end = document.getElementById('tglAkhir').value;
+            if (!start) return alert("Pilih minimal tanggal mulai!");
+            if (!end) end = start;
+
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            if (startDate > endDate) return alert("Tanggal akhir tidak valid!");
+
+            const batch = db.batch();
+            let current = new Date(startDate);
+            while (current <= endDate) {
+                const y = current.getFullYear();
+                const m = String(current.getMonth() + 1).padStart(2, '0');
+                const d = String(current.getDate()).padStart(2, '0');
+                const dateStr = `${y}-${m}-${d}`;
+                const docRef = db.collection("hari_libur").doc(dateStr);
+                batch.set(docRef, { tanggal: dateStr });
+                current.setDate(current.getDate() + 1);
+            }
+            await batch.commit();
+            alert("Tanggal Merah berhasil disimpan!");
+            loadLiburSpesifik();
+        }
+
+        function loadLiburSpesifik() {
+            const list = document.getElementById('listLibur');
+            list.innerHTML = '<li style="color:#94a3b8; justify-content:center;">Memuat...</li>';
+            hariLiburSpesifik = []; 
+            
+            db.collection("hari_libur").orderBy("tanggal").get().then((querySnapshot) => {
+                list.innerHTML = '';
+                if(querySnapshot.empty) list.innerHTML = '<li style="color:#94a3b8; justify-content:center;">Belum ada libur khusus</li>';
+                querySnapshot.forEach((doc) => {
+                    hariLiburSpesifik.push(doc.id); 
+                    const li = document.createElement('li');
+                    li.innerHTML = `${doc.id} <span style="color:#f87171; cursor:pointer; font-size:0.85rem; font-weight:bold; padding: 5px 10px; background: rgba(239, 68, 68, 0.1); border-radius: 4px;" onclick="hapusLibur('${doc.id}')">Hapus</span>`;
+                    list.appendChild(li);
+                });
+            });
+        }
+
+        function hapusLibur(id) {
+            if(confirm(`Hapus libur tanggal ${id}?`)) {
+                db.collection("hari_libur").doc(id).delete().then(() => loadLiburSpesifik());
+            }
+        }
+
+        function ubahTglSiklus() {
+            const tgl = document.getElementById('tglSiklus').value;
+            if(!tgl) return alert("Pilih tanggal!");
+            db.collection("pengaturan").doc("sistem").set({ tanggalMulai: tgl }, { merge: true })
+              .then(() => {
+                  tanggalMulaiSiklus = tgl;
+                  alert("Tanggal Awal Siklus berhasil dikalibrasi!");
               });
         }
 
