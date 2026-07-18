@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Piket Salam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --accent-blue: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #020617, #0f172a, #1e3a8a);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+                        0 0 40px var(--accent-glow);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            font-weight: 800;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .date-display {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .piket-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .piket-item {
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 12px;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .piket-item:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .class-badge {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            display: block;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        .footer-link {
+            margin-top: 30px;
+            display: block;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Jadwal Piket Salam</h1>
+        <div id="statusBadge" class="status-badge">Memuat...</div>
+        <div id="dateDisplay" class="date-display"></div>
+        <ul class="piket-list" id="piketList">
+            <!-- List akan diisi oleh JavaScript -->
+        </ul>
+        <a href="/login.html" class="footer-link">Login Admin</a>
+    </div>
+
+    <script>
+        // Database jadwal mentah
+        const jadwalMentah = [
+            [{nama: "Adrian Faaris Atmawidjaya", kelas: "8F"}, {nama: "Alhena Khanzaa Prasetya", kelas: "8F"}, {nama: "Maya Adelia Andi Putri", kelas: "8G"}],
+            [{nama: "Terbit Pancasona", kelas: "8F"}, {nama: "Zahra Wahyu Puspitasari", kelas: "8H"}, {nama: "Azzam Putra Nayo", kelas: "8G"}],
+            [{nama: "Daud Anang Yusuf", kelas: "8E"}, {nama: "Shyailla Putri Setyadika", kelas: "8E"}, {nama: "Cesario Nartha Setiawan", kelas: "8E"}],
+            [{nama: "Lionel Rafael Ndori Wangge", kelas: "8E"}, {nama: "Nathania Puspitasari", kelas: "8E"}, {nama: "Zefanya Cheryl Putri Elsinta", kelas: "8E"}],
+            [{nama: "Khanza Ailen Tatiara Agata", kelas: "8D"}, {nama: "Exel Diandra Anam", kelas: "8G"}, {nama: "Renita Dwi Cahaya", kelas: "8i"}],
+            [{nama: "Meilda Ayu Pramesti Umboyono", kelas: "9E"}, {nama: "Anindya Cindy Kirana", kelas: "9A"}, {nama: "Angelina Putri Pramesti", kelas: "9g"}],
+            [{nama: "Ahmad Naufal Al Faruq", kelas: "9H"}, {nama: "Aisyah Qilyatul Aulia", kelas: "9g"}, {nama: "Bagas Praditya Yanuar Sumarsono", kelas: "9H"}],
+            [{nama: "Felicia Imanuela Cahyani", kelas: "9i"}, {nama: "Assyifa Sukma Pradah", kelas: "9i"}, {nama: "Ikhmal Adillah Arfa", kelas: "9H"}],
+            [{nama: "Kirana Zahra Syafa Rahma", kelas: "9g"}, {nama: "Sarah Nur Aini", kelas: "9g"}, {nama: "Thalita Zalva Almira", kelas: "9g"}],
+            [{nama: "Anindhita Aurora Salsabila Surya Putri", kelas: "9F"}, {nama: "Kireina Cahya Liveria", kelas: "9C"}, {nama: "Sheren Nevrina Zahra", kelas: "9H"}]
+        ];
+
+        // Simulasi database hari libur (Jika di-deploy nanti, ini diambil dari Firebase)
+        const hariLibur = [
+            // Contoh format: "2026-07-20"
+        ];
+
+        function getTargetDate() {
+            const now = new Date();
+            const hour = now.getHours();
+            let targetDate = new Date();
+            let isTomorrow = false;
+
+            // Jika dibuka setelah jam 08.00, tampilkan jadwal besok
+            if (hour >= 8) {
+                targetDate.setDate(now.getDate() + 1);
+                isTomorrow = true;
+            }
+
+            return { date: targetDate, isTomorrow };
+        }
+
+        function isHariLiburAtauWeekend(date) {
+            const day = date.getDay();
+            if (day === 0 || day === 6) return true; // Minggu(0) atau Sabtu(6)
+            
+            const dateString = date.toISOString().split('T')[0];
+            return hariLibur.includes(dateString);
+        }
+
+        function hitungHariEfektif(targetDate) {
+            // Referensi tanggal mulai (Misal: Senin minggu pertama)
+            const startDate = new Date('2026-07-13'); // Ganti dengan tanggal aktif pertama
+            let current = new Date(startDate);
+            let indexJadwal = 0;
+
+            // Loop untuk menghitung hari efektif tanpa menggeser jika libur
+            while (current <= targetDate) {
+                if (!isHariLiburAtauWeekend(current)) {
+                    // Hanya maju index jadwal jika bukan hari libur
+                    indexJadwal++; 
+                }
+                current.setDate(current.getDate() + 1);
+            }
+            
+            return (indexJadwal - 1) % 10; // Modulo 10 karena siklus 10 hari
+        }
+
+        function renderJadwal() {
+            const { date: targetDate, isTomorrow } = getTargetDate();
+            
+            const opsiTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
+            const tanggalStr = targetDate.toLocaleDateString('id-ID', opsiTanggal);
+
+            document.getElementById('statusBadge').innerText = isTomorrow ? 'Jadwal Besok' : 'Jadwal Hari Ini';
+            document.getElementById('dateDisplay').innerText = tanggalStr;
+
+            const piketList = document.getElementById('piketList');
+            piketList.innerHTML = '';
+
+            if (isHariLiburAtauWeekend(targetDate)) {
+                piketList.innerHTML = '<li class="piket-item" style="color: #f87171;">Tidak ada piket (Hari Libur)</li>';
+                return;
+            }
+
+            const indexHariIni = hitungHariEfektif(targetDate);
+            const siswaPiket = jadwalMentah[indexHariIni];
+
+            siswaPiket.forEach(siswa => {
+                const li = document.createElement('li');
+                li.className = 'piket-item';
+                li.innerHTML = `${siswa.nama} <span class="class-badge">Kelas ${siswa.kelas}</span>`;
+                piketList.appendChild(li);
+            });
+        }
+
+        renderJadwal();
+    </script>
+</body>
+</html>
