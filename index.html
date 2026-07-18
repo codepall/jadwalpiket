@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Piket Salam</title>
+    <title>Jadwal Piket Salam Premium</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -85,17 +85,18 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // Nama panggilan + Distribusi kelompok persis dengan revisi
         let jadwalSiklus = [
-            [{nama: "Ahmad Naufal Al Faruq", kelas: "9H"}, {nama: "Maya Adelia Andi Putri", kelas: "8G"}, {nama: "Daud Anang Yusuf", kelas: "8E"}],
-            [{nama: "Terbit Pancasona", kelas: "8F"}, {nama: "Zefanya Cheryl Putri Elsinta", kelas: "8E"}, {nama: "Anindya Cindy Kirana", kelas: "9A"}],
-            [{nama: "Lionel Rafael Ndori Wangge", kelas: "8E"}, {nama: "Sarah Nur Aini", kelas: "9G"}, {nama: "Exel Diandra Anam", kelas: "8G"}],
-            [{nama: "Bagas Praditya Yanuar Sumarsono", kelas: "9H"}, {nama: "Zahra Wahyu Puspitasari", kelas: "8H"}, {nama: "Renita Dwi Cahaya", kelas: "8I"}],
-            [{nama: "Shyailla Putri Setyadika", kelas: "8E"}, {nama: "Kireina Cahya Liveria", kelas: "9C"}, {nama: "Felicia Imanuela Cahyani", kelas: "9I"}],
-            [{nama: "Alhena Khanzaa Prasetya", kelas: "8F"}, {nama: "Assyifa Sukma Pradah", kelas: "9I"}, {nama: "Khanza Ailen Tatiara Agata", kelas: "8D"}],
-            [{nama: "Ikhmal Adillah Arfa", kelas: "9H"}, {nama: "Nathania Puspitasari", kelas: "8E"}, {nama: "Angelina Putri Pramesti", kelas: "9G"}],
-            [{nama: "Adrian Faaris Atmawidjaya", kelas: "8F"}, {nama: "Meilda Ayu Pramesti Umboyono", kelas: "9E"}, {nama: "Thalita Zalva Almira", kelas: "9G"}],
-            [{nama: "Cesario Nartha Setiawan", kelas: "8E"}, {nama: "Sheren Nevrina Zahra", kelas: "9H"}, {nama: "Aisyah Qilyatul Aulia", kelas: "9G"}],
-            [{nama: "Azzam Putra Nayo", kelas: "8G"}, {nama: "Anindhita Aurora Salsabila Surya Putri", kelas: "9F"}, {nama: "Kirana Zahra Syafa Rahma", kelas: "9G"}]
+            [{nama: "Naufal", kelas: "9H"}, {nama: "Maya", kelas: "8G"}, {nama: "Daud", kelas: "8E"}],
+            [{nama: "Pancasona", kelas: "8F"}, {nama: "Zefanya", kelas: "8E"}, {nama: "Cindy", kelas: "9A"}],
+            [{nama: "Lionel", kelas: "8E"}, {nama: "Sarah", kelas: "9G"}, {nama: "Exel", kelas: "8G"}],
+            [{nama: "Bagas", kelas: "9H"}, {nama: "Zahra", kelas: "8H"}, {nama: "Renita", kelas: "8I"}],
+            [{nama: "Shyailla", kelas: "8E"}, {nama: "Kireina", kelas: "9C"}, {nama: "Felicia", kelas: "9I"}],
+            [{nama: "Alhena", kelas: "8F"}, {nama: "Assyifa", kelas: "9I"}, {nama: "Agata", kelas: "8D"}],
+            [{nama: "Ikhmal", kelas: "9H"}, {nama: "Nathania", kelas: "8E"}, {nama: "Angelina", kelas: "9G"}],
+            [{nama: "Atma", kelas: "8F"}, {nama: "Meilda", kelas: "9E"}, {nama: "Thalita", kelas: "9G"}],
+            [{nama: "Cesario", kelas: "8E"}, {nama: "Sheren", kelas: "9H"}, {nama: "Aulia", kelas: "9G"}],
+            [{nama: "Azzam", kelas: "8G"}, {nama: "Anindhita", kelas: "9F"}, {nama: "Syafa", kelas: "9G"}]
         ];
 
         let hariLiburSpesifik = [];
@@ -152,7 +153,6 @@
             let targetDate = new Date(now);
             let badgeText = 'Jadwal Hari Ini';
 
-            // Logika "Jadwal Selanjutnya" jika dibuka setelah jam 08:00
             if (now.getHours() >= 8) {
                 let tomorrow = new Date(now);
                 tomorrow.setDate(now.getDate() + 1);
@@ -160,7 +160,6 @@
                 let checkDate = new Date(tomorrow);
                 let holidayCount = 0;
                 
-                // Menghitung berapa hari libur berturut-turut dari besok
                 while (isHariLibur(checkDate)) {
                     holidayCount++;
                     checkDate.setDate(checkDate.getDate() + 1);
