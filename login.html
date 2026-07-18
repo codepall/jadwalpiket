@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --glass-bg: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --accent-blue: #3b82f6; --text-main: #f8fafc; }
+        body { margin: 0; min-height: 100vh; background: linear-gradient(135deg, #020617, #0f172a, #1e3a8a); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-main); display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px; width: 100%; max-width: 400px; text-align: center; }
+        input, button { width: 100%; box-sizing: border-box; margin-bottom: 15px; padding: 12px 15px; border-radius: 8px; border: none; font-family: inherit; }
+        input { background: rgba(255, 255, 255, 0.05); color: white; border: 1px solid var(--glass-border); }
+        button { background: var(--accent-blue); color: white; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="margin-bottom: 20px;">Login Admin</h1>
+        <input type="email" id="email" placeholder="Email Admin">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Masuk</button>
+        <p id="errorMsg" style="color: #f87171; font-size: 0.9rem; display: none;"></p>
+        <a href="/index.html" style="color:#94a3b8; font-size: 0.85rem; text-decoration: none; display: block; margin-top: 15px;">Kembali ke Jadwal</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <script>
+        /* MASUKKAN FIREBASE CONFIG KAMU DI SINI */
+        const firebaseConfig = {
+  apiKey: "AIzaSyD6qO-GfQupUahS-vWmORIMMJAIconbuow",
+  authDomain: "jadwalpiket-cd023.firebaseapp.com",
+  projectId: "jadwalpiket-cd023",
+  storageBucket: "jadwalpiket-cd023.firebasestorage.app",
+  messagingSenderId: "1046765391875",
+  appId: "1:1046765391875:web:81569f60292879260dbe36",
+  measurementId: "G-TH3XFWJ03N"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then(() => { window.location.href = "/admin.html"; })
+                .catch(() => {
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = "Email atau Password salah!";
+                });
+        }
+    </script>
+</body>
+</html>
+
