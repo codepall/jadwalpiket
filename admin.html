@@ -50,6 +50,14 @@
 
         ul.list-libur { padding: 0; list-style: none; margin: 0; }
         ul.list-libur li { background: rgba(255,255,255,0.03); padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
+
+        /* Notifikasi Auto Save */
+        #autoSaveToast {
+            position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white;
+            padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s, transform 0.3s; transform: translateY(20px); pointer-events: none; z-index: 1000;
+        }
+        #autoSaveToast.show { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
@@ -58,13 +66,11 @@
         
         <div class="card">
             <h3>Manajemen Jadwal Piket</h3>
-            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px; margin-bottom: 20px;">Atur jadwal atau salin teks pengumuman untuk jadwal aktif selanjutnya.</p>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px; margin-bottom: 20px;">Jadwal otomatis tersimpan (Auto-Save) setiap kali kamu mengubahnya.</p>
             
             <button onclick="salinPengumumanSelanjutnya()" style="margin-bottom: 25px; background: #3b82f6; font-size: 1rem; padding: 15px;">📋 Salin Pengumuman Jadwal Selanjutnya</button>
             
             <div id="jadwalEditorContainer">Memuat jadwal...</div>
-            
-            <button onclick="simpanJadwal()" style="margin-top: 15px; background: #10b981; font-size: 1rem; padding: 15px;">💾 Simpan Perubahan Jadwal Ke Database</button>
         </div>
 
         <div class="card">
@@ -106,6 +112,9 @@
 
         <button onclick="logout()" class="btn-danger" style="margin-top: 20px; padding: 15px;">Keluar / Logout</button>
     </div>
+
+    <!-- Elemen Toast Notifikasi Auto Save -->
+    <div id="autoSaveToast">✅ Tersimpan Otomatis</div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -179,12 +188,10 @@
             const now = new Date();
             let targetDate = new Date(now);
             
-            // Geser ke besok jika sudah melewati jam 08.00 pagi
             if (now.getHours() >= 8) {
                 targetDate.setDate(now.getDate() + 1);
             }
 
-            // Terus maju jika hari tersebut libur
             while(isHariLibur(targetDate)) {
                 targetDate.setDate(targetDate.getDate() + 1);
             }
@@ -253,17 +260,34 @@
             });
         }
 
+        // --- SISTEM AUTO SAVE ---
+        let autoSaveTimeout;
+        function tampilkanToast() {
+            const toast = document.getElementById('autoSaveToast');
+            toast.classList.add('show');
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+
+        function autoSaveKeDatabase() {
+            db.collection("jadwal").doc("data").set({ siklus: jadwalLokal })
+              .then(() => { tampilkanToast(); })
+              .catch((error) => alert("Gagal menyimpan otomatis! Pastikan Rules Firestore mengizinkan Write.\n\nError: " + error.message));
+        }
+
         function pindahSiswa(dariHari, indexSiswa, keHariStr) {
             if (keHariStr === "") return;
             const keHari = parseInt(keHariStr);
             const siswa = jadwalLokal[dariHari].splice(indexSiswa, 1)[0];
             jadwalLokal[keHari].push(siswa);
             renderJadwalEditor();
+            autoSaveKeDatabase(); // Trigger Auto-Save
         }
 
         function hapusSiswa(hari, index) {
             jadwalLokal[hari].splice(index, 1);
             renderJadwalEditor();
+            autoSaveKeDatabase(); // Trigger Auto-Save
         }
 
         function tambahSiswa(hari) {
@@ -272,13 +296,9 @@
             if(!nama) return alert("Nama tidak boleh kosong!");
             jadwalLokal[hari].push({nama, kelas: kelas || "-"});
             renderJadwalEditor();
+            autoSaveKeDatabase(); // Trigger Auto-Save
         }
-
-        function simpanJadwal() {
-            db.collection("jadwal").doc("data").set({ siklus: jadwalLokal })
-              .then(() => alert("Jadwal piket berhasil diperbarui di database!"))
-              .catch((error) => alert("Gagal menyimpan! Pastikan Rules Firestore kamu benar.\n\nError: " + error.message));
-        }
+        // --- AKHIR SISTEM AUTO SAVE ---
 
         function loadPengaturan() {
             db.collection("pengaturan").doc("sistem").get().then((doc) => {
@@ -336,13 +356,13 @@
         function loadLiburSpesifik() {
             const list = document.getElementById('listLibur');
             list.innerHTML = '<li style="color:#94a3b8; justify-content:center;">Memuat...</li>';
-            hariLiburSpesifik = []; // Reset local array
+            hariLiburSpesifik = []; 
             
             db.collection("hari_libur").orderBy("tanggal").get().then((querySnapshot) => {
                 list.innerHTML = '';
                 if(querySnapshot.empty) list.innerHTML = '<li style="color:#94a3b8; justify-content:center;">Belum ada libur khusus</li>';
                 querySnapshot.forEach((doc) => {
-                    hariLiburSpesifik.push(doc.id); // Simpan ke variable lokal
+                    hariLiburSpesifik.push(doc.id); 
                     const li = document.createElement('li');
                     li.innerHTML = `${doc.id} <span style="color:#f87171; cursor:pointer; font-size:0.85rem; font-weight:bold; padding: 5px 10px; background: rgba(239, 68, 68, 0.1); border-radius: 4px;" onclick="hapusLibur('${doc.id}')">Hapus</span>`;
                     list.appendChild(li);
