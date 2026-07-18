@@ -3,41 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Admin</title>
+    <title>Login Administrator</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --glass-bg: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --accent-blue: #3b82f6; --text-main: #f8fafc; }
-        body { margin: 0; min-height: 100vh; background: linear-gradient(135deg, #020617, #0f172a, #1e3a8a); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-main); display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .container { background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px; width: 100%; max-width: 400px; text-align: center; }
-        input, button { width: 100%; box-sizing: border-box; margin-bottom: 15px; padding: 12px 15px; border-radius: 8px; border: none; font-family: inherit; }
-        input { background: rgba(255, 255, 255, 0.05); color: white; border: 1px solid var(--glass-border); }
-        button { background: var(--accent-blue); color: white; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        button:hover { background: #2563eb; }
+        :root { --bg-gradient: linear-gradient(135deg, #020617, #0f172a, #1e3a8a); --glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08); --accent-blue: #3b82f6; --text-main: #f8fafc; }
+        body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-attachment: fixed; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-main); display: flex; justify-content: center; align-items: center; padding: 20px; position: relative; overflow: hidden; }
+        body::before { content: ""; position: absolute; border-radius: 50%; filter: blur(100px); z-index: -1; width: 400px; height: 400px; background: rgba(59, 130, 246, 0.15); top: -100px; left: -100px; }
+        .container { background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--glass-border); border-radius: 28px; padding: 45px 35px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1); }
+        h1 { margin-top: 0; margin-bottom: 30px; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.5px; }
+        input, button { width: 100%; box-sizing: border-box; margin-bottom: 16px; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-family: inherit; font-size: 1rem; transition: all 0.3s; }
+        input { background: rgba(255,255,255,0.05); color: white; }
+        input:focus { outline: none; border-color: var(--accent-blue); background: rgba(255,255,255,0.08); }
+        button { background: var(--accent-blue); color: white; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+        button:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4); }
+        .back-link { color: #94a3b8; font-size: 0.9rem; text-decoration: none; display: inline-block; margin-top: 20px; font-weight: 500; transition: color 0.2s; }
+        .back-link:hover { color: white; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 style="margin-bottom: 20px;">Login Admin</h1>
-        <input type="email" id="email" placeholder="Email Admin">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="login()">Masuk</button>
-        <p id="errorMsg" style="color: #f87171; font-size: 0.9rem; display: none;"></p>
-        <a href="/index.html" style="color:#94a3b8; font-size: 0.85rem; text-decoration: none; display: block; margin-top: 15px;">Kembali ke Jadwal</a>
+        <h1>Otorisasi Akses</h1>
+        <input type="email" id="email" placeholder="Alamat Email">
+        <input type="password" id="password" placeholder="Kata Sandi">
+        <button onclick="login()">Masuk ke Dashboard</button>
+        <p id="errorMsg" style="color: #f87171; font-size: 0.9rem; display: none; margin-top: 10px; font-weight: 600;"></p>
+        <a href="/index.html" class="back-link">&larr; Kembali ke Jadwal Utama</a>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <script>
-        /* MASUKKAN FIREBASE CONFIG KAMU DI SINI */
         const firebaseConfig = {
-  apiKey: "AIzaSyD6qO-GfQupUahS-vWmORIMMJAIconbuow",
-  authDomain: "jadwalpiket-cd023.firebaseapp.com",
-  projectId: "jadwalpiket-cd023",
-  storageBucket: "jadwalpiket-cd023.firebasestorage.app",
-  messagingSenderId: "1046765391875",
-  appId: "1:1046765391875:web:81569f60292879260dbe36",
-  measurementId: "G-TH3XFWJ03N"
+            apiKey: "AIzaSyD6qO-GfQupUahS-vWmORIMMJAIconbuow",
+            authDomain: "jadwalpiket-cd023.firebaseapp.com",
+            projectId: "jadwalpiket-cd023",
+            storageBucket: "jadwalpiket-cd023.firebasestorage.app",
+            messagingSenderId: "1046765391875",
+            appId: "1:1046765391875:web:81569f60292879260dbe36",
+            measurementId: "G-TH3XFWJ03N"
         };
         firebase.initializeApp(firebaseConfig);
 
@@ -50,10 +54,9 @@
                 .then(() => { window.location.href = "/admin.html"; })
                 .catch(() => {
                     errorMsg.style.display = 'block';
-                    errorMsg.innerText = "Email atau Password salah!";
+                    errorMsg.innerText = "Email atau Password tidak valid!";
                 });
         }
     </script>
 </body>
 </html>
-
