@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Piket Salam Premium</title>
+    <title>Jadwal Piket Salam</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -85,7 +85,6 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Database Default (Sudah diacak secara permanen dan kapital)
         let jadwalSiklus = [
             [{nama: "Ahmad Naufal Al Faruq", kelas: "9H"}, {nama: "Maya Adelia Andi Putri", kelas: "8G"}, {nama: "Daud Anang Yusuf", kelas: "8E"}],
             [{nama: "Terbit Pancasona", kelas: "8F"}, {nama: "Zefanya Cheryl Putri Elsinta", kelas: "8E"}, {nama: "Anindya Cindy Kirana", kelas: "9A"}],
@@ -108,6 +107,10 @@
             const m = String(date.getMonth() + 1).padStart(2, '0');
             const d = String(date.getDate()).padStart(2, '0');
             return `${y}-${m}-${d}`;
+        }
+
+        function isHariLibur(date) {
+            return liburDefault.includes(date.getDay()) || hariLiburSpesifik.includes(getLocalYYYYMMDD(date));
         }
 
         Promise.all([
@@ -147,15 +150,33 @@
         function renderJadwal() {
             const now = new Date();
             let targetDate = new Date(now);
-            let isTomorrow = false;
+            let badgeText = 'Jadwal Hari Ini';
 
+            // Logika "Jadwal Selanjutnya" jika dibuka setelah jam 08:00
             if (now.getHours() >= 8) {
-                targetDate.setDate(now.getDate() + 1);
-                isTomorrow = true;
+                let tomorrow = new Date(now);
+                tomorrow.setDate(now.getDate() + 1);
+                
+                let checkDate = new Date(tomorrow);
+                let holidayCount = 0;
+                
+                // Menghitung berapa hari libur berturut-turut dari besok
+                while (isHariLibur(checkDate)) {
+                    holidayCount++;
+                    checkDate.setDate(checkDate.getDate() + 1);
+                }
+                
+                if (holidayCount <= 2) {
+                    targetDate = checkDate;
+                    badgeText = holidayCount === 0 ? 'Jadwal Besok' : 'Jadwal Selanjutnya';
+                } else {
+                    targetDate = tomorrow;
+                    badgeText = 'Jadwal Besok';
+                }
             }
 
             const opsiTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
-            document.getElementById('statusBadge').innerText = isTomorrow ? 'Jadwal Besok' : 'Jadwal Hari Ini';
+            document.getElementById('statusBadge').innerText = badgeText;
             document.getElementById('dateDisplay').innerText = targetDate.toLocaleDateString('id-ID', opsiTanggal);
 
             const piketList = document.getElementById('piketList');
