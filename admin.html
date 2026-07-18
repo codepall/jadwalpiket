@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin Piket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #0f172a; --glass-bg: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --accent-blue: #3b82f6; --text-main: #f8fafc; }
+        body { margin: 0; min-height: 100vh; background: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-main); padding: 20px; }
+        .container { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px; max-width: 600px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1, h3 { margin-top: 0; }
+        .card { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        input, button { width: 100%; box-sizing: border-box; margin-bottom: 10px; padding: 10px; border-radius: 6px; border: none; font-family: inherit; }
+        input[type="date"] { background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--glass-border); color-scheme: dark; }
+        button { background: var(--accent-blue); color: white; font-weight: bold; cursor: pointer; }
+        button:hover { background: #2563eb; }
+        .btn-danger { background: #ef4444; } .btn-danger:hover { background: #dc2626; }
+        .flex-row { display: flex; gap: 10px; align-items: center; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .checkbox-group label { background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.9rem; border: 1px solid transparent; }
+        .checkbox-group label:hover { background: rgba(255,255,255,0.1); }
+        ul { padding-left: 0; list-style: none; }
+        li { background: rgba(255,255,255,0.05); padding: 10px; margin-bottom: 5px; border-radius: 6px; display: flex; justify-content: space-between; }
+        .del-btn { color: #f87171; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Panel Admin</h1>
+        
+        <div class="card">
+            <h3>Hari Libur Mingguan (Default)</h3>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px;">Pilih hari yang otomatis selalu libur:</p>
+            <div class="checkbox-group" id="defaultDaysForm">
+                <label><input type="checkbox" value="1"> Senin</label>
+                <label><input type="checkbox" value="2"> Selasa</label>
+                <label><input type="checkbox" value="3"> Rabu</label>
+                <label><input type="checkbox" value="4"> Kamis</label>
+                <label><input type="checkbox" value="5"> Jumat</label>
+                <label><input type="checkbox" value="6"> Sabtu</label>
+                <label><input type="checkbox" value="0"> Minggu</label>
+            </div>
+            <button onclick="simpanLiburDefault()" style="margin-bottom:0;">Simpan Libur Mingguan</button>
+        </div>
+
+        <div class="card">
+            <h3>Atur Libur Panjang / Tunggal</h3>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px;">Tanggal spesifik, akan menggeser jadwal:</p>
+            <div class="flex-row">
+                <input type="date" id="tglMulai">
+                <span>s/d</span>
+                <input type="date" id="tglAkhir">
+            </div>
+            <button onclick="tambahLibur()">Simpan Hari Libur Khusus</button>
+        </div>
+
+        <div class="card">
+            <h3>Kalibrasi Ulang Jadwal</h3>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px;">Tentukan Tanggal Awal Siklus (Hari ke-1):</p>
+            <div class="flex-row">
+                <input type="date" id="tglSiklus">
+                <button onclick="ubahTglSiklus()" style="margin-bottom:0;">Simpan</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Daftar Hari Libur Khusus</h3>
+            <ul id="listLibur"></ul>
+        </div>
+
+        <button onclick="logout()" class="btn-danger">Logout</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        /* MASUKKAN FIREBASE CONFIG KAMU DI SINI */
+        const firebaseConfig = {
+  apiKey: "AIzaSyD6qO-GfQupUahS-vWmORIMMJAIconbuow",
+  authDomain: "jadwalpiket-cd023.firebaseapp.com",
+  projectId: "jadwalpiket-cd023",
+  storageBucket: "jadwalpiket-cd023.firebasestorage.app",
+  messagingSenderId: "1046765391875",
+  appId: "1:1046765391875:web:81569f60292879260dbe36",
+  measurementId: "G-TH3XFWJ03N"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Autentikasi
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) window.location.href = "/login.html"; 
+            else { 
+                loadPengaturan(); 
+                loadLiburSpesifik(); 
+            }
+        });
+
+        function getLocalYYYYMMDD(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function loadPengaturan() {
+            db.collection("pengaturan").doc("sistem").get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.tanggalMulai) {
+                        document.getElementById('tglSiklus').value = data.tanggalMulai;
+                    }
+                    if (data.hariLiburDefault) {
+                        const checkboxes = document.querySelectorAll('#defaultDaysForm input');
+                        checkboxes.forEach(cb => {
+                            cb.checked = data.hariLiburDefault.includes(parseInt(cb.value));
+                        });
+                    }
+                }
+            });
+        }
+
+        function simpanLiburDefault() {
+            const checkboxes = document.querySelectorAll('#defaultDaysForm input:checked');
+            const selectedDays = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            
+            db.collection("pengaturan").doc("sistem").set({ hariLiburDefault: selectedDays }, { merge: true })
+              .then(() => alert("Hari libur mingguan berhasil disimpan!"));
+        }
+
+        async function tambahLibur() {
+            const start = document.getElementById('tglMulai').value;
+            let end = document.getElementById('tglAkhir').value;
+            
+            if (!start) return alert("Pilih minimal tanggal mulai!");
+            if (!end) end = start;
+
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+
+            if (startDate > endDate) return alert("Tanggal akhir tidak boleh lebih kecil dari tanggal mulai!");
+
+            const batch = db.batch();
+            let current = new Date(startDate);
+
+            while (current <= endDate) {
+                const dateStr = getLocalYYYYMMDD(current);
+                const docRef = db.collection("hari_libur").doc(dateStr);
+                batch.set(docRef, { tanggal: dateStr });
+                current.setDate(current.getDate() + 1);
+            }
+
+            await batch.commit();
+            alert("Hari libur khusus berhasil disimpan!");
+            loadLiburSpesifik();
+        }
+
+        function loadLiburSpesifik() {
+            const list = document.getElementById('listLibur');
+            list.innerHTML = 'Memuat...';
+            db.collection("hari_libur").orderBy("tanggal").get().then((querySnapshot) => {
+                list.innerHTML = '';
+                if(querySnapshot.empty) list.innerHTML = '<li style="color:#94a3b8">Belum ada libur khusus</li>';
+                
+                querySnapshot.forEach((doc) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${doc.id} <span class="del-btn" onclick="hapusLibur('${doc.id}')">Hapus</span>`;
+                    list.appendChild(li);
+                });
+            });
+        }
+
+        function hapusLibur(id) {
+            if(confirm(`Hapus libur tanggal ${id}? Jadwal akan otomatis terkalibrasi ulang.`)) {
+                db.collection("hari_libur").doc(id).delete().then(() => loadLiburSpesifik());
+            }
+        }
+
+        function ubahTglSiklus() {
+            const tgl = document.getElementById('tglSiklus').value;
+            if(!tgl) return alert("Pilih tanggal!");
+            db.collection("pengaturan").doc("sistem").set({ tanggalMulai: tgl }, { merge: true })
+              .then(() => alert("Tanggal Awal Siklus berhasil diubah. Jadwal berhasil dikalibrasi!"));
+        }
+
+        function logout() {
+            firebase.auth().signOut().then(() => window.location.href = "/index.html");
+        }
+    </script>
+</body>
+</html>
