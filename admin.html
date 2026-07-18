@@ -7,31 +7,51 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg-deep: #020617; --glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08); --accent-blue: #3b82f6; --text-main: #f8fafc; }
+        * { box-sizing: border-box; }
         body { margin: 0; min-height: 100vh; background: linear-gradient(135deg, #020617, #0f172a); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-main); padding: 30px 15px; }
-        .container { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 35px; max-width: 800px; margin: 0 auto; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .container { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px; max-width: 800px; margin: 0 auto; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        @media (min-width: 600px) { .container { padding: 35px; } }
         h1 { margin-top: 0; font-weight: 700; text-align: center; margin-bottom: 30px; }
         h3 { margin-top: 0; color: #e2e8f0; font-size: 1.1rem; }
         .card { background: rgba(0,0,0,0.25); padding: 20px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.04); }
-        input, select, button { width: 100%; box-sizing: border-box; margin-bottom: 12px; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-family: inherit; background: rgba(255,255,255,0.05); color: white; }
+        
+        input, select, button { width: 100%; margin-bottom: 12px; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-family: inherit; background: rgba(255,255,255,0.05); color: white; }
         input[type="date"] { color-scheme: dark; }
         button { background: var(--accent-blue); font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
         button:hover { background: #2563eb; transform: translateY(-1px); }
         .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); } .btn-danger:hover { background: #ef4444; color: white; }
         .flex-row { display: flex; gap: 12px; align-items: center; }
         .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
-        .checkbox-group label { background: rgba(255,255,255,0.03); padding: 8px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; border: 1px solid var(--glass-border); }
+        .checkbox-group label { background: rgba(255,255,255,0.03); padding: 8px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; border: 1px solid var(--glass-border); flex: 1; min-width: 100px; justify-content: center; }
         .checkbox-group label:hover { background: rgba(255,255,255,0.1); }
         
+        /* RESPONSIVE JADWAL EDITOR */
         .hari-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        .hari-header { display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: #60a5fa; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;}
-        .siswa-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; gap: 10px; }
-        .siswa-info { flex: 1; font-size: 0.95rem; }
-        .siswa-actions { display: flex; gap: 8px; align-items: center; }
-        .siswa-actions select { margin: 0; padding: 6px; font-size: 0.8rem; width: auto; background: #1e293b; }
-        .btn-icon { padding: 6px 12px; margin: 0; width: auto; font-size: 0.8rem; }
-        .add-siswa-form { display: flex; gap: 10px; margin-top: 15px; }
+        .hari-header { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; font-weight: 700; color: #60a5fa; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;}
+        .hari-header button { width: 100%; }
+        
+        .siswa-item { display: flex; flex-direction: column; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 10px; gap: 12px; border: 1px solid rgba(255,255,255,0.03); }
+        .siswa-info { font-size: 0.95rem; line-height: 1.4; }
+        .siswa-actions { display: flex; gap: 10px; width: 100%; }
+        .siswa-actions select { margin: 0; padding: 10px; font-size: 0.85rem; flex: 1; background: #1e293b; border-radius: 6px; }
+        .btn-icon { padding: 10px 15px; margin: 0; font-size: 0.85rem; border-radius: 6px; white-space: nowrap; width: auto; }
+        
+        .add-siswa-form { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .add-siswa-form input { margin: 0; }
-        .add-siswa-form button { width: auto; padding: 0 20px; margin: 0; background: #10b981; }
+        .add-siswa-form button { margin: 0; background: #10b981; }
+
+        @media (min-width: 600px) {
+            .hari-header { flex-direction: row; justify-content: space-between; align-items: center; }
+            .hari-header button { width: auto; }
+            .siswa-item { flex-direction: row; align-items: center; }
+            .siswa-info { flex: 1; }
+            .siswa-actions { width: auto; }
+            .add-siswa-form { flex-direction: row; }
+            .add-siswa-form input { flex: 1; }
+            .add-siswa-form input[placeholder="Kelas"] { flex: 0 1 100px; }
+            .add-siswa-form button { flex: 0 1 auto; padding: 0 25px; }
+        }
+
         ul.list-libur { padding: 0; list-style: none; margin: 0; }
         ul.list-libur li { background: rgba(255,255,255,0.03); padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
     </style>
@@ -44,7 +64,7 @@
             <h3>Manajemen Jadwal Piket</h3>
             <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px; margin-bottom: 20px;">Pindahkan siswa, hapus, atau langsung Salin Pengumuman.</p>
             <div id="jadwalEditorContainer">Memuat jadwal...</div>
-            <button onclick="simpanJadwal()" style="margin-top: 15px; background: #10b981;">Simpan Perubahan Jadwal Ke Database</button>
+            <button onclick="simpanJadwal()" style="margin-top: 15px; background: #10b981; font-size: 1rem; padding: 15px;">Simpan Perubahan Jadwal Ke Database</button>
         </div>
 
         <div class="card">
@@ -65,12 +85,12 @@
         <div class="card">
             <h3>Atur Libur Khusus / Tanggal Merah</h3>
             <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px;">Jadwal tetap berputar, siswa dapat bonus libur.</p>
-            <div class="flex-row">
-                <input type="date" id="tglMulai">
-                <span style="color:#94a3b8;">s/d</span>
-                <input type="date" id="tglAkhir">
+            <div class="flex-row" style="flex-wrap: wrap;">
+                <input type="date" id="tglMulai" style="flex: 1; min-width: 140px; margin-bottom: 0;">
+                <span style="color:#94a3b8; text-align: center;">s/d</span>
+                <input type="date" id="tglAkhir" style="flex: 1; min-width: 140px; margin-bottom: 0;">
             </div>
-            <button onclick="tambahLibur()">Simpan Tanggal Merah</button>
+            <button onclick="tambahLibur()" style="margin-top: 15px;">Simpan Tanggal Merah</button>
             <h4 style="margin-top: 20px; margin-bottom: 10px; font-size: 0.95rem;">Daftar Tanggal Merah:</h4>
             <ul id="listLibur" class="list-libur"></ul>
         </div>
@@ -79,12 +99,12 @@
             <h3>Kalibrasi Awal Siklus</h3>
             <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px;">Tentukan kapan "Hari Ke-1" dimulai:</p>
             <div class="flex-row">
-                <input type="date" id="tglSiklus">
-                <button onclick="ubahTglSiklus()" style="margin-bottom:0;">Terapkan</button>
+                <input type="date" id="tglSiklus" style="margin-bottom: 0;">
+                <button onclick="ubahTglSiklus()" style="margin-bottom: 0; width: auto; padding: 0 20px;">Terapkan</button>
             </div>
         </div>
 
-        <button onclick="logout()" class="btn-danger" style="margin-top: 20px;">Keluar / Logout</button>
+        <button onclick="logout()" class="btn-danger" style="margin-top: 20px; padding: 15px;">Keluar / Logout</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -106,7 +126,6 @@
 
         let jadwalLokal = [];
 
-        // Database Default sudah diacak (Random) dan siap dipakai
         const defaultSiklus = [
             [{nama: "Ahmad Naufal Al Faruq", kelas: "9H"}, {nama: "Maya Adelia Andi Putri", kelas: "8G"}, {nama: "Daud Anang Yusuf", kelas: "8E"}],
             [{nama: "Terbit Pancasona", kelas: "8F"}, {nama: "Zefanya Cheryl Putri Elsinta", kelas: "8E"}, {nama: "Anindya Cindy Kirana", kelas: "9A"}],
@@ -140,19 +159,19 @@
             jadwalLokal.forEach((hariArr, i) => {
                 let html = `<div class="hari-card">
                     <div class="hari-header">
-                        <span>Siklus Hari Ke-${i + 1}</span>
+                        <span style="font-size: 1.1rem;">Siklus Hari Ke-${i + 1}</span>
                         <button onclick="salinPengumuman(${i})" class="btn-icon" style="background:#3b82f6; font-weight:bold;">📋 Salin Pengumuman</button>
                     </div>
                     <div id="listHari${i}">`;
                 
                 hariArr.forEach((siswa, j) => {
                     html += `<div class="siswa-item">
-                        <div class="siswa-info"><strong>${siswa.nama}</strong> (${siswa.kelas.toUpperCase()})</div>
+                        <div class="siswa-info"><strong>${siswa.nama}</strong> <br><span style="color:#94a3b8; font-size:0.85rem;">Kelas ${siswa.kelas.toUpperCase()}</span></div>
                         <div class="siswa-actions">
                             <select onchange="pindahSiswa(${i}, ${j}, this.value)">
                                 <option value="">Pindah...</option>`;
                                 for(let k=0; k<jadwalLokal.length; k++) {
-                                    if(k !== i) html += `<option value="${k}">Hari ${k+1}</option>`;
+                                    if(k !== i) html += `<option value="${k}">Hari Ke-${k+1}</option>`;
                                 }
                     html += `</select>
                             <button class="btn-icon" style="background:#ef4444;" onclick="hapusSiswa(${i}, ${j})">Hapus</button>
@@ -162,9 +181,9 @@
                 
                 html += `</div>
                     <div class="add-siswa-form">
-                        <input type="text" id="addNama${i}" placeholder="Nama Siswa">
-                        <input type="text" id="addKelas${i}" placeholder="Kelas" style="width: 80px; text-transform:uppercase;">
-                        <button onclick="tambahSiswa(${i})">+</button>
+                        <input type="text" id="addNama${i}" placeholder="Nama Lengkap Siswa">
+                        <input type="text" id="addKelas${i}" placeholder="Kelas" style="text-transform:uppercase;">
+                        <button onclick="tambahSiswa(${i})">+ Tambah</button>
                     </div>
                 </div>`;
                 container.innerHTML += html;
@@ -177,12 +196,10 @@
             siswaHariIni.forEach((s, idx) => {
                 listSiswa += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`;
             });
-
             const template = `📢 *PENGUMUMAN*\nPiket salam ke seluruh siswa:\n\n${listSiswa}\n*CATATAN:*\n- Memakai Jas OSIS\n- Datang pagi *sebelum pukul 06.35*\n- Berjabat tangan (bukan tos) kepada seluruh siswa, baik kelas 7, 8, ataupun 9.`;
-            
             navigator.clipboard.writeText(template).then(() => {
-                alert("Pengumuman Siklus Hari Ke-" + (hari + 1) + " berhasil disalin!");
-            }).catch(() => alert("Gagal menyalin pengumuman."));
+                alert("Pengumuman Hari Ke-" + (hari + 1) + " berhasil disalin!");
+            }).catch(() => alert("Gagal menyalin. Pastikan browser mengizinkan akses clipboard."));
         }
 
         function pindahSiswa(dariHari, indexSiswa, keHariStr) {
@@ -200,7 +217,7 @@
 
         function tambahSiswa(hari) {
             const nama = document.getElementById(`addNama${hari}`).value;
-            const kelas = document.getElementById(`addKelas${hari}`).value.toUpperCase(); // Memaksa input kapital
+            const kelas = document.getElementById(`addKelas${hari}`).value.toUpperCase();
             if(!nama) return alert("Nama tidak boleh kosong!");
             jadwalLokal[hari].push({nama, kelas: kelas || "-"});
             renderJadwalEditor();
@@ -208,7 +225,7 @@
 
         function simpanJadwal() {
             db.collection("jadwal").doc("data").set({ siklus: jadwalLokal })
-              .then(() => alert("Jadwal piket berhasil diperbarui secara permanen di database!"));
+              .then(() => alert("Jadwal piket berhasil diperbarui di database!"));
         }
 
         function loadPengaturan() {
@@ -259,13 +276,13 @@
 
         function loadLiburSpesifik() {
             const list = document.getElementById('listLibur');
-            list.innerHTML = '<li style="color:#94a3b8">Memuat...</li>';
+            list.innerHTML = '<li style="color:#94a3b8; justify-content:center;">Memuat...</li>';
             db.collection("hari_libur").orderBy("tanggal").get().then((querySnapshot) => {
                 list.innerHTML = '';
-                if(querySnapshot.empty) list.innerHTML = '<li style="color:#94a3b8">Belum ada libur khusus</li>';
+                if(querySnapshot.empty) list.innerHTML = '<li style="color:#94a3b8; justify-content:center;">Belum ada libur khusus</li>';
                 querySnapshot.forEach((doc) => {
                     const li = document.createElement('li');
-                    li.innerHTML = `${doc.id} <span style="color:#f87171; cursor:pointer; font-size:0.85rem; font-weight:bold;" onclick="hapusLibur('${doc.id}')">Hapus</span>`;
+                    li.innerHTML = `${doc.id} <span style="color:#f87171; cursor:pointer; font-size:0.85rem; font-weight:bold; padding: 5px 10px; background: rgba(239, 68, 68, 0.1); border-radius: 4px;" onclick="hapusLibur('${doc.id}')">Hapus</span>`;
                     list.appendChild(li);
                 });
             });
