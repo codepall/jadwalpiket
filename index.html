@@ -16,89 +16,46 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
         }
-
         * { box-sizing: border-box; }
-
         body {
-            margin: 0; min-height: 100vh;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--text-main);
+            margin: 0; min-height: 100vh; background: var(--bg-gradient); background-attachment: fixed;
+            font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-main);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
+            padding: 20px; position: relative; overflow-x: hidden;
         }
-
-        /* Ambient glowing orbs */
         body::before, body::after {
             content: ""; position: absolute; border-radius: 50%; filter: blur(100px); z-index: -1;
         }
-        body::before {
-            width: 400px; height: 400px; background: rgba(59, 130, 246, 0.15);
-            top: -100px; left: -100px;
-        }
-        body::after {
-            width: 300px; height: 300px; background: rgba(14, 165, 233, 0.15);
-            bottom: -50px; right: -50px;
-        }
-
+        body::before { width: 400px; height: 400px; background: rgba(59, 130, 246, 0.15); top: -100px; left: -100px; }
+        body::after { width: 300px; height: 300px; background: rgba(14, 165, 233, 0.15); bottom: -50px; right: -50px; }
         .container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-            border-radius: 28px;
-            padding: 40px;
-            width: 100%; max-width: 480px;
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
-            text-align: center;
-            position: relative;
+            background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border); border-radius: 28px; padding: 40px;
+            width: 100%; max-width: 480px; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+            text-align: center; position: relative;
         }
-
         h1 { font-size: 1.75rem; margin-bottom: 8px; font-weight: 800; letter-spacing: -0.5px; }
-
         .status-badge {
-            display: inline-block;
-            background: rgba(59, 130, 246, 0.1);
-            color: #60a5fa;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            display: inline-block; background: rgba(59, 130, 246, 0.1); color: #60a5fa;
+            padding: 8px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 25px; border: 1px solid rgba(59, 130, 246, 0.2);
             box-shadow: 0 0 20px var(--accent-glow);
         }
-
         .date-display { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 30px; font-weight: 500; }
-
         .piket-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
-
         .piket-item {
-            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
-            padding: 18px;
-            border-radius: 16px;
-            font-weight: 700; font-size: 1.1rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; flex-direction: column; gap: 4px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); padding: 18px;
+            border-radius: 16px; font-weight: 700; font-size: 1.1rem; border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 4px;
         }
-
         .piket-item:hover {
-            transform: translateY(-3px);
-            background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-            border-color: rgba(59, 130, 246, 0.3);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transform: translateY(-3px); background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+            border-color: rgba(59, 130, 246, 0.3); box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-
-        .class-badge { font-size: 0.85rem; color: #94a3b8; font-weight: 500; }
-
+        .class-badge { font-size: 0.85rem; color: #94a3b8; font-weight: 500; text-transform: uppercase; }
         .footer-link {
-            margin-top: 35px; display: inline-block;
-            color: var(--text-muted); text-decoration: none;
-            font-size: 0.9rem; font-weight: 500;
-            transition: color 0.2s;
+            margin-top: 35px; display: inline-block; color: var(--text-muted); text-decoration: none;
+            font-size: 0.9rem; font-weight: 500; transition: color 0.2s;
         }
         .footer-link:hover { color: var(--accent-blue); }
     </style>
@@ -128,7 +85,20 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        let jadwalSiklus = [];
+        // Database Default (Sudah diacak secara permanen dan kapital)
+        let jadwalSiklus = [
+            [{nama: "Ahmad Naufal Al Faruq", kelas: "9H"}, {nama: "Maya Adelia Andi Putri", kelas: "8G"}, {nama: "Daud Anang Yusuf", kelas: "8E"}],
+            [{nama: "Terbit Pancasona", kelas: "8F"}, {nama: "Zefanya Cheryl Putri Elsinta", kelas: "8E"}, {nama: "Anindya Cindy Kirana", kelas: "9A"}],
+            [{nama: "Lionel Rafael Ndori Wangge", kelas: "8E"}, {nama: "Sarah Nur Aini", kelas: "9G"}, {nama: "Exel Diandra Anam", kelas: "8G"}],
+            [{nama: "Bagas Praditya Yanuar Sumarsono", kelas: "9H"}, {nama: "Zahra Wahyu Puspitasari", kelas: "8H"}, {nama: "Renita Dwi Cahaya", kelas: "8I"}],
+            [{nama: "Shyailla Putri Setyadika", kelas: "8E"}, {nama: "Kireina Cahya Liveria", kelas: "9C"}, {nama: "Felicia Imanuela Cahyani", kelas: "9I"}],
+            [{nama: "Alhena Khanzaa Prasetya", kelas: "8F"}, {nama: "Assyifa Sukma Pradah", kelas: "9I"}, {nama: "Khanza Ailen Tatiara Agata", kelas: "8D"}],
+            [{nama: "Ikhmal Adillah Arfa", kelas: "9H"}, {nama: "Nathania Puspitasari", kelas: "8E"}, {nama: "Angelina Putri Pramesti", kelas: "9G"}],
+            [{nama: "Adrian Faaris Atmawidjaya", kelas: "8F"}, {nama: "Meilda Ayu Pramesti Umboyono", kelas: "9E"}, {nama: "Thalita Zalva Almira", kelas: "9G"}],
+            [{nama: "Cesario Nartha Setiawan", kelas: "8E"}, {nama: "Sheren Nevrina Zahra", kelas: "9H"}, {nama: "Aisyah Qilyatul Aulia", kelas: "9G"}],
+            [{nama: "Azzam Putra Nayo", kelas: "8G"}, {nama: "Anindhita Aurora Salsabila Surya Putri", kelas: "9F"}, {nama: "Kirana Zahra Syafa Rahma", kelas: "9G"}]
+        ];
+
         let hariLiburSpesifik = [];
         let tanggalMulaiSiklus = '2026-07-20'; 
         let liburDefault = [0]; 
@@ -157,7 +127,6 @@
             renderJadwal();
         });
 
-        // Menghitung hari efektif (Hanya Libur Default yang menghentikan putaran)
         function hitungHariEfektif(targetDate) {
             const startDate = new Date(tanggalMulaiSiklus);
             startDate.setHours(0,0,0,0);
@@ -192,13 +161,11 @@
             const piketList = document.getElementById('piketList');
             piketList.innerHTML = '';
 
-            // 1. Cek jika hari ini adalah Libur Default (Minggu dll)
             if (liburDefault.includes(targetDate.getDay())) {
-                piketList.innerHTML = '<li class="piket-item" style="color: #60a5fa; text-align: center; border-color: rgba(59,130,246,0.3);">Tidak Ada Jadwal<br><span class="class-badge">Hari Libur Rutin</span></li>';
+                piketList.innerHTML = '<li class="piket-item" style="color: #60a5fa; text-align: center; border-color: rgba(59,130,246,0.3);">Tidak Ada Jadwal<br><span class="class-badge" style="color: #60a5fa;">Hari Libur Rutin</span></li>';
                 return;
             }
 
-            // 2. Cek jika hari ini adalah Libur Khusus (Bonus)
             if (hariLiburSpesifik.includes(getLocalYYYYMMDD(targetDate))) {
                 piketList.innerHTML = '<li class="piket-item" style="color: #34d399; text-align: center; border-color: rgba(52,211,153,0.3);">Bonus Libur!<br><span class="class-badge" style="color: #6ee7b7;">Jadwal hari ini ditiadakan</span></li>';
                 return;
@@ -224,7 +191,7 @@
             siswaHariIni.forEach(siswa => {
                 const li = document.createElement('li');
                 li.className = 'piket-item';
-                li.innerHTML = `${siswa.nama} <span class="class-badge">Kelas ${siswa.kelas}</span>`;
+                li.innerHTML = `${siswa.nama} <span class="class-badge">Kelas ${siswa.kelas.toUpperCase()}</span>`;
                 piketList.appendChild(li);
             });
         }
