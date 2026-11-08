@@ -271,7 +271,13 @@ function hitungIndexHari(date) {
         function salinPengumumanTerdekat() {
             const targetDate = cariTanggalTerdekatBerikutnya();
             const indexHariIni = hitungHariEfektif(targetDate);
-            if(indexHariIni < 0) return alert("Siklus belum dimulai!");
+            if(indexHariIni < 0);
+            
+            let template = document.getElementById('templatePerHari').value;
+            template = template.replace("{tanggal}", tanggalFormat).replace("{list_siswa}", listSiswa.trim());
+
+            navigator.clipboard.writeText(template).then(() => {
+                alert("Pengumuman untuk " + tanggalFormat + " berhasil disalin!");
             
             const siswaHariIni = jadwalLokal[indexHariIni];
             if(!siswaHariIni || siswaHariIni.length === 0) return alert("Jadwal kosong.");
@@ -296,6 +302,9 @@ function hitungIndexHari(date) {
             let gabunganList = "";
 
             for (let i = 0; i < jadwalLokal.length; i++) {
+                if(indexHariIni < 0) {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
                 // Lewati hari libur saat merangkai jadwal sekaligus
                 while (isHariLibur(currentDate)) {
                     currentDate.setDate(currentDate.getDate() + 1);
