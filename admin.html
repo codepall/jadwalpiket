@@ -256,7 +256,6 @@ Piket salam ke seluruh siswa:
             const indexHariIni = hitungHariEfektif(targetDate);
             
             const siswaHariIni = jadwalLokal[indexHariIni];
-            if(!siswaHariIni || siswaHariIni.length === 0) return alert("Jadwal kosong.");
 
             let listSiswa = "";
             siswaHariIni.forEach((s, idx) => { listSiswa += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`; });
