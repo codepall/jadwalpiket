@@ -71,7 +71,7 @@
         <!-- KARTU EDITOR TEMPLATE PENGUMUMAN -->
         <div class="card">
             <h3>Custom Template Pengumuman</h3>
-            <p style="font-size: 0.9rem; color: #94a3b8; margin-top: -5px; margin-bottom: 15px;">Edit template sesuai keinginan. Gunakan <code>{tanggal}</code> dan <code>{list_siswa}</code> sebagai variabel otomatis pada template per hari. Gunakan <code>{semua_jadwal_list</code> sebagai variabel otomatis pada template sekaligus.</code></p>
+            <p style="font-size: 0.9rem; color: #94a3b8; margin-top: -5px; margin-bottom: 15px;">Edit template sesuai keinginan. Gunakan <code>{tanggal}</code> dan <code>{list_siswa}</code> sebagai variabel otomatis pada template per hari. Gunakan <code>{semua_jadwal_list}</code> sebagai variabel otomatis pada template sekaligus.</p>
             
             <label style="font-size:0.85rem; color:#60a5fa; font-weight:600;">Template Per Hari:</label>
             <textarea id="templatePerHari">📢 *PENGUMUMAN*
@@ -239,46 +239,24 @@ Piket salam ke seluruh siswa:
         }
 
         // Cari tanggal efektif terdekat (maju terus sampai ketemu hari kerja/tidak libur)
-        // Cari tanggal efektif terdekat (maju terus sampai ketemu hari kerja)
-function cariTanggalTerdekatBerikutnya() {
-    const now = new Date();
-    let targetDate = new Date(now);
-    // 1. Jika sudah melewati jam 12 siang, majukan ke hari berikutnya
-    if (now.getHours() >= 12) {
-        targetDate.setDate(targetDate.getDate() + 1);
-    }
-    // 2. Maju terus selama hari tersebut adalah hari libur
-    while (isHariLibur(targetDate)) {
-        targetDate.setDate(targetDate.getDate() + 1);
-    }
-    // 3. Perulangan berdasarkan indexHariIni yang diperbaiki
-    // Pastikan variabel diinisialisasi berdasarkan targetDate saat ini
-    let indexHariIni = hitungIndexHari(targetDate); 
-    while (indexHariIni < 0) {
-        // Majukan tanggal target
-        targetDate.setDate(targetDate.getDate() + 1);
-        // WAJIB: Update nilai indexHariIni di dalam perulangan agar kondisi bisa menjadi false
-        indexHariIni = hitungIndexHari(targetDate); 
-    }
-    return targetDate;
-}
-// Contoh fungsi pembantu untuk menghitung indeks hari (sesuaikan dengan logika Anda)
-function hitungIndexHari(date) {
-    // Tulis logika/rumus Anda di sini yang mengembalikan angka
-    // Pastikan fungsi ini bisa mengembalikan angka >= 0 agar loop di atas berhenti
-    return date.getDay() - 1; // Contoh saja
-}
+        function cariTanggalTerdekatBerikutnya() {
+            const now = new Date();
+            let targetDate = new Date(now);
+            if (now.getHours() >= 8) {
+                targetDate.setDate(targetDate.getDate() + 1);
+            }
+            while(isHariLibur(targetDate)) {
+                targetDate.setDate(targetDate.getDate() + 1);
+            }
+            return targetDate;
+        }
+
         function salinPengumumanTerdekat() {
             const targetDate = cariTanggalTerdekatBerikutnya();
             const indexHariIni = hitungHariEfektif(targetDate);
-            if(indexHariIni < 0);
-            
-            let template = document.getElementById('templatePerHari').value;
-            template = template.replace("{tanggal}", tanggalFormat).replace("{list_siswa}", listSiswa.trim());
-
-            navigator.clipboard.writeText(template).then(() => {
-                alert("Pengumuman untuk " + tanggalFormat + " berhasil disalin!");
-            
+            if(indexHariIni < 0) {
+                targetDate.setDate(targetDate.getDate() + 1);
+            }
             const siswaHariIni = jadwalLokal[indexHariIni];
             if(!siswaHariIni || siswaHariIni.length === 0) return alert("Jadwal kosong.");
 
@@ -302,11 +280,8 @@ function hitungIndexHari(date) {
             let gabunganList = "";
 
             for (let i = 0; i < jadwalLokal.length; i++) {
-                if(indexHariIni < 0) {
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
                 // Lewati hari libur saat merangkai jadwal sekaligus
-                while (isHariLibur(currentDate)) {
+                while (isHariLibur(currentDate) || indexHariIni < 0) {
                     currentDate.setDate(currentDate.getDate() + 1);
                 }
 
