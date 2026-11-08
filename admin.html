@@ -4,63 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --bg-deep: #020617; 
-            --glass-bg: rgba(255, 255, 255, 0.03); 
-            --glass-border: rgba(255, 255, 255, 0.08); 
-            --accent-blue: #3b82f6; 
-            --text-main: #f8fafc; 
-            --text-muted: #94a3b8;
-        }
+        :root { --bg-deep: #020617; --glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08); --accent-blue: #3b82f6; --text-main: #f8fafc; }
         * { box-sizing: border-box; }
         body { margin: 0; min-height: 100vh; background: linear-gradient(135deg, #020617, #0f172a); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-main); padding: 30px 15px; }
-        .container { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px; max-width: 850px; margin: 0 auto; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .container { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px; max-width: 800px; margin: 0 auto; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
         @media (min-width: 600px) { .container { padding: 35px; } }
         h1 { margin-top: 0; font-weight: 700; text-align: center; margin-bottom: 20px; }
         h3 { margin-top: 0; color: #e2e8f0; font-size: 1.1rem; }
         .card { background: rgba(0,0,0,0.25); padding: 20px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.04); }
         
-        input, select, button, textarea { width: 100%; margin-bottom: 12px; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-family: inherit; background: rgba(255,255,255,0.05); color: white; }
-        textarea { min-height: 190px; resize: vertical; font-size: 0.9rem; line-height: 1.5; }
-        textarea:focus, input:focus, select:focus { outline: none; border-color: var(--accent-blue); background: rgba(255,255,255,0.08); }
+        input, select, textarea, button { width: 100%; margin-bottom: 12px; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-family: inherit; background: rgba(255,255,255,0.05); color: white; }
+        textarea { resize: vertical; min-height: 130px; line-height: 1.5; font-size: 0.9rem; }
         input[type="date"] { color-scheme: dark; }
         button { background: var(--accent-blue); font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
         button:hover { background: #2563eb; transform: translateY(-1px); }
-        .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); } 
-        .btn-danger:hover { background: #ef4444; color: white; }
-        .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; font-size: 0.85rem; padding: 8px 12px; }
-        .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); color: white; }
+        .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); } .btn-danger:hover { background: #ef4444; color: white; }
         .flex-row { display: flex; gap: 12px; align-items: center; }
-        
         .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
         .checkbox-group label { background: rgba(255,255,255,0.03); padding: 8px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; border: 1px solid var(--glass-border); flex: 1; min-width: 100px; justify-content: center; }
         .checkbox-group label:hover { background: rgba(255,255,255,0.1); }
-
-        /* GRID PENGUMUMAN */
-        .template-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 700px) { .template-grid { grid-template-columns: 1fr 1fr; } }
-        .template-box { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; }
-        .placeholder-hint { font-size: 0.8rem; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-bottom: 12px; line-height: 1.5; }
-        .placeholder-hint code { color: #60a5fa; background: rgba(59,130,246,0.15); padding: 2px 5px; border-radius: 4px; font-weight: 600; }
-        .target-preview { font-size: 0.85rem; color: #34d399; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; font-weight: 600; }
-
-        /* JADWAL EDITOR */
-        .cycle-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; }
-        .cycle-toolbar span { font-weight: 700; color: #60a5fa; font-size: 0.95rem; }
-        .cycle-toolbar-actions { display: flex; gap: 8px; width: 100%; }
-        @media (min-width: 600px) { .cycle-toolbar-actions { width: auto; } }
-
+        
         .hari-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        .hari-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-weight: 700; color: #60a5fa; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; font-size: 1.05rem; }
-        .hari-header-actions { display: flex; gap: 8px; }
+        .hari-header { font-weight: 700; color: #60a5fa; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; font-size: 1.1rem; }
         
         .siswa-item { display: flex; flex-direction: column; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 10px; gap: 12px; border: 1px solid rgba(255,255,255,0.03); }
         .siswa-info { font-size: 0.95rem; line-height: 1.4; }
         .siswa-actions { display: flex; gap: 10px; width: 100%; }
         .siswa-actions select { margin: 0; padding: 10px; font-size: 0.85rem; flex: 1; background: #1e293b; border-radius: 6px; }
-        .btn-icon { padding: 8px 14px; margin: 0; font-size: 0.8rem; border-radius: 6px; white-space: nowrap; width: auto; }
+        .btn-icon { padding: 10px 15px; margin: 0; font-size: 0.85rem; border-radius: 6px; white-space: nowrap; width: auto; }
         
         .add-siswa-form { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .add-siswa-form input { margin: 0; }
@@ -93,73 +66,41 @@
     <div class="container">
         <h1>Admin Dashboard</h1>
         
-        <div id="dbStatus" style="background: rgba(255,255,255,0.1);">⏳ Sedang mengecek koneksi ke database Firebase...</div>
+        <div id="dbStatus" style="background: rgba(255,255,255,0.1);">⏳ Memeriksa database...</div>
 
-        <!-- FITUR EDIT & SALIN PENGUMUMAN -->
+        <!-- KARTU CUSTOM TEMPLATE PENGUMUMAN -->
         <div class="card">
-            <h3>Pengaturan & Salin Pengumuman</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 20px;">
-                Edit format pengumuman di bawah sesuai keinginanmu. Format yang kamu ubah akan otomatis tersimpan.
-            </p>
+            <h3>Format / Template Pengumuman</h3>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px; margin-bottom: 12px;">Gunakan kode <code>{TANGGAL}</code> dan <code>{LIST_SISWA}</code> untuk penempatan otomatis.</p>
+            <textarea id="templateInput">📢 *PENGUMUMAN*
+{TANGGAL}
+Piket salam ke seluruh siswa:
 
-            <div class="template-grid">
-                <!-- Kolom 1: Pengumuman Harian Selanjutnya -->
-                <div class="template-box">
-                    <h4 style="margin: 0 0 10px 0; color: #60a5fa;">1. Pengumuman Jadwal Selanjutnya</h4>
-                    <div id="targetJadwalInfo" class="target-preview">Memuat jadwal terdekat...</div>
-                    <div class="placeholder-hint">
-                        Kode otomatis yang bisa dipakai:<br>
-                        <code>{tanggal}</code> = Tanggal jadwal terdekat<br>
-                        <code>{hari_ke}</code> = Urutan hari siklus<br>
-                        <code>{daftar}</code> = Daftar siswa yang bertugas
-                    </div>
-                    <textarea id="templateHarianInput" oninput="autoSaveTemplate()"></textarea>
-                    <button onclick="salinPengumumanSelanjutnya()" style="background: #3b82f6; margin-bottom: 8px;">📋 Salin Pengumuman Selanjutnya</button>
-                    <button onclick="resetTemplateHarian()" class="btn-secondary" style="margin-bottom: 0;">🔄 Reset ke Format Awal</button>
-                </div>
-
-                <!-- Kolom 2: Pengumuman Semua Jadwal Sekaligus -->
-                <div class="template-box">
-                    <h4 style="margin: 0 0 10px 0; color: #34d399;">2. Pengumuman Semua Jadwal Sekaligus</h4>
-                    <div id="totalSiklusInfo" class="target-preview" style="color: #60a5fa; background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.25);">
-                        Memuat total hari...
-                    </div>
-                    <div class="placeholder-hint">
-                        Kode otomatis yang bisa dipakai:<br>
-                        <code>{semua_jadwal}</code> = Otomatis berisi daftar seluruh jadwal dari Hari Ke-1 sampai Hari Terakhir.
-                    </div>
-                    <textarea id="templateSemuaInput" oninput="autoSaveTemplate()"></textarea>
-                    <button onclick="salinSemuaJadwal()" style="background: #10b981; margin-bottom: 8px;">📋 Salin Semua Jadwal Sekaligus</button>
-                    <button onclick="resetTemplateSemua()" class="btn-secondary" style="margin-bottom: 0;">🔄 Reset ke Format Awal</button>
-                </div>
-            </div>
+{LIST_SISWA}
+*CATATAN:*
+- Memakai Jas OSIS
+- Datang pagi *sebelum pukul 06.35*
+- Berjabat tangan (bukan tos) kepada seluruh siswa, baik kelas 7, 8, ataupun 9.</textarea>
+            <button onclick="simpanTemplate()" style="background: #8b5cf6;">Simpan Template Pengumuman</button>
         </div>
 
-        <!-- MANAJEMEN JADWAL & HARI SIKLUS -->
         <div class="card">
-            <h3>Manajemen Jadwal Piket</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 15px;">
-                Tambah/kurangi hari piket atau pindahkan siswa. Semua perubahan langsung tersimpan otomatis.
-            </p>
-
-            <div class="cycle-toolbar">
-                <span id="jumlahHariLabel">Total Siklus: 0 Hari</span>
-                <div class="cycle-toolbar-actions">
-                    <button onclick="tambahHariSiklus()" class="btn-icon" style="background: #10b981; flex: 1;">➕ Tambah Hari Piket</button>
-                    <button onclick="kurangiHariTerakhir()" class="btn-icon" style="background: #ef4444; flex: 1;">➖ Kurangi Hari Terakhir</button>
-                </div>
+            <h3>Manajemen Jadwal & Salin Pengumuman</h3>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -10px; margin-bottom: 20px;">Salin jadwal terdekat atau salin semua jadwal sekaligus.</p>
+            
+            <button onclick="salinPengumumanTerdekat()" style="margin-bottom: 10px; background: #3b82f6; font-size: 1rem; padding: 14px;">📋 Salin Pengumuman Jadwal Terdekat</button>
+            <button onclick="salinSemuaJadwal()" style="margin-bottom: 25px; background: #0ea5e9; font-size: 1rem; padding: 14px;">📑 Salin Semua Jadwal Sekaligus (Berurutan)</button>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button onclick="tambahHariPiket()" style="background: #10b981; margin:0;">➕ Tambah Hari Piket</button>
+                <button onclick="kurangiHariPiket()" class="btn-danger" style="margin:0;">🗑️ Kurangi Hari Terakhir</button>
             </div>
 
             <div id="jadwalEditorContainer">Memuat jadwal...</div>
-
-            <button onclick="tambahHariSiklus()" style="margin-top: 10px; background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px dashed rgba(16, 185, 129, 0.4); padding: 14px;">
-                ➕ Tambah Hari Piket Baru
-            </button>
         </div>
 
         <div class="card">
             <h3>Hari Libur Mingguan (Default)</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px;">Menghentikan putaran jadwal pada hari yang dicentang:</p>
             <div class="checkbox-group" id="defaultDaysForm">
                 <label><input type="checkbox" value="1"> Senin</label>
                 <label><input type="checkbox" value="2"> Selasa</label>
@@ -174,7 +115,6 @@
 
         <div class="card">
             <h3>Atur Libur Khusus / Tanggal Merah</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px;">Jadwal tetap berputar (bonus libur), dan pengumuman otomatis melompati tanggal ini:</p>
             <div class="flex-row" style="flex-wrap: wrap;">
                 <input type="date" id="tglMulai" style="flex: 1; min-width: 140px; margin-bottom: 0;">
                 <span style="color:#94a3b8; text-align: center;">s/d</span>
@@ -187,7 +127,6 @@
 
         <div class="card">
             <h3>Kalibrasi Awal Siklus</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px;">Tentukan kapan "Hari Ke-1" dimulai:</p>
             <div class="flex-row">
                 <input type="date" id="tglSiklus" style="margin-bottom: 0;">
                 <button onclick="ubahTglSiklus()" style="margin-bottom: 0; width: auto; padding: 0 20px;">Terapkan</button>
@@ -197,7 +136,7 @@
         <button onclick="logout()" class="btn-danger" style="margin-top: 20px; padding: 15px;">Keluar / Logout</button>
     </div>
 
-    <div id="autoSaveToast">✅ Tersimpan Otomatis</div>
+    <div id="autoSaveToast">✅ Perubahan Tersimpan</div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -219,11 +158,8 @@
         let jadwalLokal = [];
         let hariLiburSpesifik = [];
         let tanggalMulaiSiklus = '2026-07-20'; 
-        let liburDefault = [0];
-
-        const DEFAULT_TEMPLATE_HARIAN = `📢 *PENGUMUMAN*\n{tanggal}\nPiket salam ke seluruh siswa:\n\n{daftar}\n*CATATAN:*\n- Memakai Jas OSIS\n- Datang pagi *sebelum pukul 06.35*\n- Berjabat tangan (bukan tos) kepada seluruh siswa, baik kelas 7, 8, ataupun 9.`;
-
-        const DEFAULT_TEMPLATE_SEMUA = `📢 *JADWAL PIKET SALAM LENGKAP*\nBerikut adalah pembagian jadwal piket salam:\n\n{semua_jadwal}\n*CATATAN:*\n- Memakai Jas OSIS\n- Datang pagi *sebelum pukul 06.35*\n- Berjabat tangan (bukan tos) kepada seluruh siswa, baik kelas 7, 8, ataupun 9.`;
+        let liburDefault = [0]; 
+        let customTemplate = "";
 
         const defaultSiklus = [
             [{nama: "Naufal", kelas: "9H"}, {nama: "Maya", kelas: "8G"}, {nama: "Daud", kelas: "8E"}],
@@ -231,47 +167,31 @@
             [{nama: "Lionel", kelas: "8E"}, {nama: "Sarah", kelas: "9G"}, {nama: "Exel", kelas: "8G"}],
             [{nama: "Bagas", kelas: "9H"}, {nama: "Zahra", kelas: "8H"}, {nama: "Renita", kelas: "8I"}],
             [{nama: "Shyailla", kelas: "8E"}, {nama: "Kireina", kelas: "9C"}, {nama: "Felicia", kelas: "9I"}],
-            [{nama: "Alhena", kelas: "8F"}, {nama: "Assyifa", kelas: "9I"}, {nama: "Agata", kelas: "8D"}],
-            [{nama: "Ikhmal", kelas: "9H"}, {nama: "Nathania", kelas: "8E"}, {nama: "Angelina", kelas: "9G"}],
-            [{nama: "Atma", kelas: "8F"}, {nama: "Meilda", kelas: "9E"}, {nama: "Thalita", kelas: "9G"}],
-            [{nama: "Cesario", kelas: "8E"}, {nama: "Sheren", kelas: "9H"}, {nama: "Aulia", kelas: "9G"}],
-            [{nama: "Azzam", kelas: "8G"}, {nama: "Anindhita", kelas: "9F"}, {nama: "Syafa", kelas: "9G"}]
+            [{nama: "Alhena", kelas: "8F"}, {nama: "Assyifa", kelas: "9I"}, {nama: "Agata", kelas: "8D"}]
         ];
 
         firebase.auth().onAuthStateChanged((user) => {
-            if (!user) {
-                window.location.href = "/login.html"; 
-            } else { 
+            if (!user) window.location.href = "/login.html"; 
+            else { 
                 cekKoneksiDatabase();
-                // Memuat seluruh data termasuk daftar libur khusus secara paralel
-                Promise.all([
-                    loadPengaturan(),
-                    loadLiburSpesifik(),
-                    loadJadwalData()
-                ]).then(() => {
-                    updateTargetPreview();
-                });
+                loadPengaturan(); 
+                loadLiburSpesifik();
+                loadJadwalData(); 
             }
         });
 
         function cekKoneksiDatabase() {
             const statusDiv = document.getElementById('dbStatus');
-            statusDiv.innerHTML = "⏳ Menguji akses tulis ke Firebase...";
-            statusDiv.style.background = "rgba(202, 138, 4, 0.2)";
-            statusDiv.style.color = "#facc15";
-
             db.collection("jadwal").doc("ping_test").set({ waktu: firebase.firestore.FieldValue.serverTimestamp() })
                 .then(() => {
-                    statusDiv.innerHTML = "✅ STATUS DATABASE AMAN & TERHUBUNG!";
+                    statusDiv.innerHTML = "✅ STATUS DATABASE AKTIF & AMAN";
                     statusDiv.style.background = "rgba(16, 185, 129, 0.2)";
                     statusDiv.style.color = "#34d399";
-                    statusDiv.style.border = "1px solid #10b981";
                 })
                 .catch((error) => {
-                    statusDiv.innerHTML = "❌ DATABASE DIBLOKIR FIREBASE!<br>Pesan: " + error.message;
+                    statusDiv.innerHTML = "❌ KONEKSI DIBLOKIR: " + error.message;
                     statusDiv.style.background = "rgba(239, 68, 68, 0.2)";
                     statusDiv.style.color = "#f87171";
-                    statusDiv.style.border = "1px solid #ef4444";
                 });
         }
 
@@ -282,198 +202,98 @@
             return `${y}-${m}-${d}`;
         }
 
-        function parseLocalYYYYMMDD(str) {
-            const parts = str.split('-');
-            return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 0, 0, 0, 0);
-        }
-
         function isHariLibur(date) {
             return liburDefault.includes(date.getDay()) || hariLiburSpesifik.includes(getLocalYYYYMMDD(date));
         }
 
         function hitungHariEfektif(targetDate) {
-            const totalSiklus = jadwalLokal.length;
-            if (totalSiklus === 0) return -1;
-
-            const startDate = parseLocalYYYYMMDD(tanggalMulaiSiklus);
-            const target = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate(), 0, 0, 0, 0);
-            
-            if (target < startDate) return -1;
-
+            const startDate = new Date(tanggalMulaiSiklus);
+            startDate.setHours(0,0,0,0);
+            targetDate.setHours(0,0,0,0);
             let current = new Date(startDate);
             let indexJadwal = 0;
-            while (current <= target) {
+            while (current <= targetDate) {
                 if (!liburDefault.includes(current.getDay())) indexJadwal++; 
                 current.setDate(current.getDate() + 1);
             }
-            if (indexJadwal <= 0) return -1;
-            return (indexJadwal - 1) % totalSiklus;
+            return (indexJadwal - 1) % (jadwalLokal.length || 6);
         }
 
-        // Mencari tanggal & jadwal aktif terdekat (tanpa peduli H-1, H-2, atau libur panjang)
-        function cariJadwalAktifTerdekat() {
-            if (jadwalLokal.length === 0) return null;
-
-            const adaSiswa = jadwalLokal.some(hari => hari && hari.length > 0);
-            if (!adaSiswa) return null;
-
+        // --- FUNGSI SALIN PENGUMUMAN TERDEKAT ---
+        function salinPengumumanTerdekat() {
             const now = new Date();
-            let checkDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+            let targetDate = new Date(now);
+            if (now.getHours() >= 8) targetDate.setDate(now.getDate() + 1);
 
-            // Jika dibuka setelah pukul 08.00, mulai pencarian dari besok
-            if (now.getHours() >= 8) {
-                checkDate.setDate(checkDate.getDate() + 1);
+            while(isHariLibur(targetDate)) {
+                targetDate.setDate(targetDate.getDate() + 1);
             }
 
-            // Jika tanggal pencarian masih sebelum Tanggal Awal Siklus, lompat ke Tanggal Awal Siklus
-            const startDate = parseLocalYYYYMMDD(tanggalMulaiSiklus);
-            if (checkDate < startDate) {
-                checkDate = new Date(startDate);
-            }
+            const indexHariIni = hitungHariEfektif(targetDate);
+            if(indexHariIni < 0) return alert("Siklus belum dimulai! Periksa Tanggal Awal Siklus.");
+            
+            const siswaHariIni = jadwalLokal[indexHariIni];
+            if(!siswaHariIni || siswaHariIni.length === 0) return alert("Jadwal kosong pada hari tersebut.");
 
-            // Cari terus maju sampai menemukan hari yang TIDAK libur dan ADA siswanya (maks 365 hari)
-            for (let safety = 0; safety < 365; safety++) {
-                if (!isHariLibur(checkDate)) {
-                    const idx = hitungHariEfektif(checkDate);
-                    if (idx >= 0 && jadwalLokal[idx] && jadwalLokal[idx].length > 0) {
-                        return { date: checkDate, indexHari: idx, siswa: jadwalLokal[idx] };
-                    }
-                }
-                checkDate.setDate(checkDate.getDate() + 1);
-            }
-            return null;
-        }
-
-        function updateTargetPreview() {
-            const infoBox = document.getElementById('targetJadwalInfo');
-            const totalBox = document.getElementById('totalSiklusInfo');
-            const labelJumlah = document.getElementById('jumlahHariLabel');
-
-            totalBox.innerText = `📋 Mencakup Hari Ke-1 s/d Hari Ke-${jadwalLokal.length}`;
-            labelJumlah.innerText = `Total Siklus: ${jadwalLokal.length} Hari`;
-
-            const hasil = cariJadwalAktifTerdekat();
-            if (!hasil) {
-                infoBox.innerText = "⚠️ Belum ada jadwal aktif yang ditemukan.";
-                return;
-            }
-            const opsiTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
-            const tglStr = hasil.date.toLocaleDateString('id-ID', opsiTanggal);
-            infoBox.innerText = `🎯 Jadwal Terdekat: ${tglStr} (Hari Ke-${hasil.indexHari + 1})`;
-        }
-
-        // --- FITUR SALIN PENGUMUMAN ---
-        function formatDaftarSiswa(arrSiswa) {
-            let teks = "";
-            arrSiswa.forEach((s, idx) => {
-                teks += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}`;
-                if (idx < arrSiswa.length - 1) teks += `\n`;
-            });
-            return teks;
-        }
-
-        function salinPengumumanSelanjutnya() {
-            const hasil = cariJadwalAktifTerdekat();
-            if (!hasil) return alert("Tidak ada jadwal aktif yang bisa disalin! Pastikan minimal ada 1 hari yang terisi siswa.");
+            let listSiswa = "";
+            siswaHariIni.forEach((s, idx) => { listSiswa += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`; });
 
             const opsiTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
-            const tanggalFormat = hasil.date.toLocaleDateString('id-ID', opsiTanggal);
-            const daftarSiswa = formatDaftarSiswa(hasil.siswa);
-            const hariKe = `Hari Ke-${hasil.indexHari + 1}`;
+            const tanggalFormat = targetDate.toLocaleDateString('id-ID', opsiTanggal);
 
-            let template = document.getElementById('templateHarianInput').value || DEFAULT_TEMPLATE_HARIAN;
-            let hasilTeks = template
-                .replace(/\{tanggal\}/gi, tanggalFormat)
-                .replace(/\{hari_ke\}/gi, hariKe)
-                .replace(/\{daftar\}/gi, daftarSiswa);
-
-            navigator.clipboard.writeText(hasilTeks).then(() => {
-                alert(`Pengumuman untuk ${tanggalFormat} (${hariKe}) berhasil disalin!`);
+            let template = document.getElementById('templateInput').value;
+            let hasilFinal = template.replace('{TANGGAL}', tanggalFormat).replace('{LIST_SISWA}', listSiswa.trim());
+            
+            navigator.clipboard.writeText(hasilFinal).then(() => {
+                alert("Pengumuman untuk tanggal " + tanggalFormat + " berhasil disalin!");
             }).catch(() => alert("Gagal menyalin pengumuman."));
         }
 
-        function salinPengumumanHariTertentu(indexHari) {
-            const siswaHariIni = jadwalLokal[indexHari];
-            if (!siswaHariIni || siswaHariIni.length === 0) return alert(`Hari Ke-${indexHari + 1} masih kosong!`);
-
-            const daftarSiswa = formatDaftarSiswa(siswaHariIni);
-            const hariKe = `Hari Ke-${indexHari + 1}`;
-
-            let template = document.getElementById('templateHarianInput').value || DEFAULT_TEMPLATE_HARIAN;
-            let hasilTeks = template
-                .replace(/\{tanggal\}/gi, hariKe)
-                .replace(/\{hari_ke\}/gi, hariKe)
-                .replace(/\{daftar\}/gi, daftarSiswa);
-
-            navigator.clipboard.writeText(hasilTeks).then(() => {
-                alert(`Pengumuman ${hariKe} berhasil disalin!`);
-            }).catch(() => alert("Gagal menyalin pengumuman."));
-        }
-
+        // --- FUNGSI SALIN SEMUA JADWAL SEKALIGUS ---
         function salinSemuaJadwal() {
-            if (jadwalLokal.length === 0) return alert("Jadwal masih kosong!");
+            let now = new Date();
+            if (now.getHours() >= 8) now.setDate(now.getDate() + 1);
+            while(isHariLibur(now)) now.setDate(now.getDate() + 1);
 
-            let blokSemua = "";
-            jadwalLokal.forEach((hariArr, i) => {
-                blokSemua += `*Hari Ke-${i + 1}*\n`;
-                if (!hariArr || hariArr.length === 0) {
-                    blokSemua += `-(Kosong)-\n`;
-                } else {
-                    hariArr.forEach((s, idx) => {
-                        blokSemua += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`;
-                    });
+            let currentDate = new Date(now);
+            let gabunganTeks = "";
+
+            // Menyalin sebanyak jumlah hari piket yang aktif saat ini
+            for (let i = 0; i < jadwalLokal.length; i++) {
+                while(isHariLibur(currentDate)) {
+                    currentDate.setDate(currentDate.getDate() + 1);
                 }
-                if (i < jadwalLokal.length - 1) blokSemua += `\n`;
-            });
 
-            let template = document.getElementById('templateSemuaInput').value || DEFAULT_TEMPLATE_SEMUA;
-            let hasilTeks = template.replace(/\{semua_jadwal\}/gi, blokSemua.trim());
+                const indexHari = hitungHariEfektif(currentDate);
+                const siswaHari = jadwalLokal[indexHari];
 
-            navigator.clipboard.writeText(hasilTeks).then(() => {
-                alert(`Seluruh jadwal (Hari Ke-1 s/d Hari Ke-${jadwalLokal.length}) berhasil disalin!`);
-            }).catch(() => alert("Gagal menyalin semua jadwal."));
-        }
+                let listSiswa = "";
+                if (siswaHari) {
+                    siswaHari.forEach((s, idx) => { listSiswa += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`; });
+                }
 
-        // --- AUTO-SAVE TEMPLATE PENGUMUMAN ---
-        let templateSaveTimeout;
-        function autoSaveTemplate() {
-            clearTimeout(templateSaveTimeout);
-            templateSaveTimeout = setTimeout(() => {
-                const templateHarian = document.getElementById('templateHarianInput').value;
-                const templateSemua = document.getElementById('templateSemuaInput').value;
-                db.collection("pengaturan").doc("sistem").set({
-                    templateHarian: templateHarian,
-                    templateSemua: templateSemua
-                }, { merge: true }).then(() => tampilkanToast());
-            }, 700);
-        }
+                const opsiTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
+                const tanggalFormat = currentDate.toLocaleDateString('id-ID', opsiTanggal);
 
-        function resetTemplateHarian() {
-            if (confirm("Kembalikan format pengumuman harian ke bawaan awal?")) {
-                document.getElementById('templateHarianInput').value = DEFAULT_TEMPLATE_HARIAN;
-                autoSaveTemplate();
+                let template = document.getElementById('templateInput').value;
+                let singleText = template.replace('{TANGGAL}', tanggalFormat).replace('{LIST_SISWA}', listSiswa.trim());
+
+                gabunganTeks += singleText + "\n\n====================\n\n";
+
+                // Maju ke hari berikutnya untuk perulangan selanjutnya
+                currentDate.setDate(currentDate.getDate() + 1);
             }
+
+            navigator.clipboard.writeText(gabunganTeks.trim()).then(() => {
+                alert("Semua jadwal piket dari hari pertama sampai terakhir berhasil disalin!");
+            }).catch(() => alert("Gagal menyalin seluruh jadwal."));
         }
 
-        function resetTemplateSemua() {
-            if (confirm("Kembalikan format pengumuman semua jadwal ke bawaan awal?")) {
-                document.getElementById('templateSemuaInput').value = DEFAULT_TEMPLATE_SEMUA;
-                autoSaveTemplate();
-            }
-        }
-
-        // --- MANAJEMEN JADWAL & HARI SIKLUS ---
         function loadJadwalData() {
-            return db.collection("jadwal").doc("data").get().then((doc) => {
+            db.collection("jadwal").doc("data").get().then((doc) => {
                 if (doc.exists && doc.data().siklus) {
                     const dataSiklus = doc.data().siklus;
-                    if (typeof dataSiklus === 'string') {
-                        jadwalLokal = JSON.parse(dataSiklus);
-                    } else if (Array.isArray(dataSiklus)) {
-                        jadwalLokal = dataSiklus;
-                    } else {
-                        jadwalLokal = defaultSiklus;
-                    }
+                    jadwalLokal = typeof dataSiklus === 'string' ? JSON.parse(dataSiklus) : defaultSiklus;
                 } else {
                     jadwalLokal = defaultSiklus;
                 }
@@ -484,72 +304,26 @@
         function renderJadwalEditor() {
             const container = document.getElementById('jadwalEditorContainer');
             container.innerHTML = '';
-            
             jadwalLokal.forEach((hariArr, i) => {
-                let html = `<div class="hari-card">
-                    <div class="hari-header">
-                        <span>Siklus Hari Ke-${i + 1} (${hariArr.length} Siswa)</span>
-                        <div class="hari-header-actions">
-                            <button class="btn-icon" style="background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3);" onclick="salinPengumumanHariTertentu(${i})">📋 Salin Hari Ini</button>
-                            <button class="btn-icon" style="background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3);" onclick="hapusHariSiklus(${i})">🗑️ Hapus Hari</button>
-                        </div>
-                    </div>
-                    <div id="listHari${i}">`;
-                
-                if (hariArr.length === 0) {
-                    html += `<div style="color: #64748b; font-size: 0.85rem; padding: 10px 0; text-align: center;">Belum ada siswa di hari ini.</div>`;
+                let html = `<div class="hari-card"><div class="hari-header">Hari Piket Ke-${i + 1}</div><div id="listHari${i}">`;
+                if(hariArr) {
+                    hariArr.forEach((siswa, j) => {
+                        html += `<div class="siswa-item">
+                            <div class="siswa-info"><strong>${siswa.nama}</strong> <br><span style="color:#94a3b8; font-size:0.85rem;">Kelas ${siswa.kelas.toUpperCase()}</span></div>
+                            <div class="siswa-actions">
+                                <select onchange="pindahSiswa(${i}, ${j}, this.value)"><option value="">Pindah...</option>`;
+                                    for(let k=0; k<jadwalLokal.length; k++) { if(k !== i) html += `<option value="${k}">Hari Ke-${k+1}</option>`; }
+                        html += `</select><button class="btn-icon" style="background:#ef4444;" onclick="hapusSiswa(${i}, ${j})">Hapus</button>
+                            </div></div>`;
+                    });
                 }
-
-                hariArr.forEach((siswa, j) => {
-                    html += `<div class="siswa-item">
-                        <div class="siswa-info"><strong>${siswa.nama}</strong> <br><span style="color:#94a3b8; font-size:0.85rem;">Kelas ${siswa.kelas.toUpperCase()}</span></div>
-                        <div class="siswa-actions">
-                            <select onchange="pindahSiswa(${i}, ${j}, this.value)"><option value="">Pindah ke...</option>`;
-                                for(let k=0; k<jadwalLokal.length; k++) { 
-                                    if(k !== i) html += `<option value="${k}">Hari Ke-${k+1}</option>`; 
-                                }
-                    html += `</select>
-                            <button class="btn-icon" style="background:#ef4444;" onclick="hapusSiswa(${i}, ${j})">Hapus</button>
-                        </div>
-                    </div>`;
-                });
-                
-                html += `</div>
-                    <div class="add-siswa-form">
-                        <input type="text" id="addNama${i}" placeholder="Nama Panggilan Siswa">
+                html += `</div><div class="add-siswa-form">
+                        <input type="text" id="addNama${i}" placeholder="Nama Pendek">
                         <input type="text" id="addKelas${i}" placeholder="Kelas" style="text-transform:uppercase;">
-                        <button onclick="tambahSiswa(${i})">+ Tambah Siswa</button>
-                    </div>
-                </div>`;
+                        <button onclick="tambahSiswa(${i})">+ Tambah</button>
+                    </div></div>`;
                 container.innerHTML += html;
             });
-
-            updateTargetPreview();
-        }
-
-        function tambahHariSiklus() {
-            jadwalLokal.push([]);
-            renderJadwalEditor();
-            autoSaveKeDatabase();
-        }
-
-        function kurangiHariTerakhir() {
-            if (jadwalLokal.length <= 1) return alert("Minimal harus ada 1 hari dalam siklus!");
-            const hariTerakhir = jadwalLokal.length;
-            if (confirm(`Yakin ingin menghapus Siklus Hari Ke-${hariTerakhir} beserta daftar siswanya?`)) {
-                jadwalLokal.pop();
-                renderJadwalEditor();
-                autoSaveKeDatabase();
-            }
-        }
-
-        function hapusHariSiklus(indexHari) {
-            if (jadwalLokal.length <= 1) return alert("Minimal harus ada 1 hari dalam siklus!");
-            if (confirm(`Hapus Siklus Hari Ke-${indexHari + 1}? Hari setelahnya akan otomatis naik menggantikan urutan.`)) {
-                jadwalLokal.splice(indexHari, 1);
-                renderJadwalEditor();
-                autoSaveKeDatabase();
-            }
         }
 
         let autoSaveTimeout;
@@ -562,11 +336,24 @@
 
         function autoSaveKeDatabase() {
             const jsonString = JSON.stringify(jadwalLokal);
-            db.collection("jadwal").doc("data").set({ siklus: jsonString })
+            db.collection("jadwal").doc("data").set({ siklus: jsonString }, { merge: true })
               .then(() => { tampilkanToast(); })
-              .catch((error) => {
-                  alert("Gagal Auto-Save!\n\nError: " + error.message);
-              });
+              .catch((error) => { alert("Gagal Auto-Save: " + error.message); });
+        }
+
+        function tambahHariPiket() {
+            jadwalLokal.push([]); // Tambah hari baru kosong
+            renderJadwalEditor();
+            autoSaveKeDatabase();
+        }
+
+        function kurangiHariPiket() {
+            if(jadwalLokal.length <= 1) return alert("Minimal harus ada 1 hari piket!");
+            if(confirm("Yakin ingin menghapus hari piket terakhir?")) {
+                jadwalLokal.pop();
+                renderJadwalEditor();
+                autoSaveKeDatabase();
+            }
         }
 
         function pindahSiswa(dariHari, indexSiswa, keHariStr) {
@@ -583,8 +370,8 @@
         }
 
         function tambahSiswa(hari) {
-            const nama = document.getElementById(`addNama${hari}`).value.trim();
-            const kelas = document.getElementById(`addKelas${hari}`).value.trim().toUpperCase();
+            const nama = document.getElementById(`addNama${hari}`).value;
+            const kelas = document.getElementById(`addKelas${hari}`).value.toUpperCase();
             if(!nama) return alert("Nama tidak boleh kosong!");
             jadwalLokal[hari].push({nama, kelas: kelas || "-"});
             renderJadwalEditor();
@@ -592,10 +379,7 @@
         }
 
         function loadPengaturan() {
-            document.getElementById('templateHarianInput').value = DEFAULT_TEMPLATE_HARIAN;
-            document.getElementById('templateSemuaInput').value = DEFAULT_TEMPLATE_SEMUA;
-
-            return db.collection("pengaturan").doc("sistem").get().then((doc) => {
+            db.collection("pengaturan").doc("sistem").get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
                     if (data.tanggalMulai) {
@@ -607,14 +391,17 @@
                         const checkboxes = document.querySelectorAll('#defaultDaysForm input');
                         checkboxes.forEach(cb => cb.checked = liburDefault.includes(parseInt(cb.value)));
                     }
-                    if (typeof data.templateHarian === 'string' && data.templateHarian.trim() !== '') {
-                        document.getElementById('templateHarianInput').value = data.templateHarian;
-                    }
-                    if (typeof data.templateSemua === 'string' && data.templateSemua.trim() !== '') {
-                        document.getElementById('templateSemuaInput').value = data.templateSemua;
+                    if (data.templatePengumuman) {
+                        document.getElementById('templateInput').value = data.templatePengumuman;
                     }
                 }
             });
+        }
+
+        function simpanTemplate() {
+            const templateText = document.getElementById('templateInput').value;
+            db.collection("pengaturan").doc("sistem").set({ templatePengumuman: templateText }, { merge: true })
+              .then(() => { alert("Format template pengumuman berhasil disimpan!"); });
         }
 
         function simpanLiburDefault() {
@@ -623,8 +410,6 @@
             db.collection("pengaturan").doc("sistem").set({ hariLiburDefault: selectedDays }, { merge: true })
               .then(() => {
                   liburDefault = selectedDays;
-                  updateTargetPreview();
-                  tampilkanToast();
                   alert("Hari libur mingguan berhasil disimpan!");
               });
         }
@@ -635,22 +420,24 @@
             if (!start) return alert("Pilih minimal tanggal mulai!");
             if (!end) end = start;
 
-            const startDate = parseLocalYYYYMMDD(start);
-            const endDate = parseLocalYYYYMMDD(end);
+            const startDate = new Date(start);
+            const endDate = new Date(end);
             if (startDate > endDate) return alert("Tanggal akhir tidak valid!");
 
             const batch = db.batch();
             let current = new Date(startDate);
             while (current <= endDate) {
-                const dateStr = getLocalYYYYMMDD(current);
+                const y = current.getFullYear();
+                const m = String(current.getMonth() + 1).padStart(2, '0');
+                const d = String(current.getDate()).padStart(2, '0');
+                const dateStr = `${y}-${m}-${d}`;
                 const docRef = db.collection("hari_libur").doc(dateStr);
                 batch.set(docRef, { tanggal: dateStr });
                 current.setDate(current.getDate() + 1);
             }
             await batch.commit();
             alert("Tanggal Merah berhasil disimpan!");
-            await loadLiburSpesifik();
-            updateTargetPreview();
+            loadLiburSpesifik();
         }
 
         function loadLiburSpesifik() {
@@ -658,7 +445,7 @@
             list.innerHTML = '<li style="color:#94a3b8; justify-content:center;">Memuat...</li>';
             hariLiburSpesifik = []; 
             
-            return db.collection("hari_libur").orderBy("tanggal").get().then((querySnapshot) => {
+            db.collection("hari_libur").orderBy("tanggal").get().then((querySnapshot) => {
                 list.innerHTML = '';
                 if(querySnapshot.empty) list.innerHTML = '<li style="color:#94a3b8; justify-content:center;">Belum ada libur khusus</li>';
                 querySnapshot.forEach((doc) => {
@@ -672,10 +459,7 @@
 
         function hapusLibur(id) {
             if(confirm(`Hapus libur tanggal ${id}?`)) {
-                db.collection("hari_libur").doc(id).delete().then(async () => {
-                    await loadLiburSpesifik();
-                    updateTargetPreview();
-                });
+                db.collection("hari_libur").doc(id).delete().then(() => loadLiburSpesifik());
             }
         }
 
@@ -685,8 +469,6 @@
             db.collection("pengaturan").doc("sistem").set({ tanggalMulai: tgl }, { merge: true })
               .then(() => {
                   tanggalMulaiSiklus = tgl;
-                  updateTargetPreview();
-                  tampilkanToast();
                   alert("Tanggal Awal Siklus berhasil dikalibrasi!");
               });
         }
