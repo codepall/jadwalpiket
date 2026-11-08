@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Piket Salam</title>
+    <title>Jadwal Piket Salam Premium</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -60,11 +60,7 @@
             [{nama: "Lionel", kelas: "8E"}, {nama: "Sarah", kelas: "9G"}, {nama: "Exel", kelas: "8G"}],
             [{nama: "Bagas", kelas: "9H"}, {nama: "Zahra", kelas: "8H"}, {nama: "Renita", kelas: "8I"}],
             [{nama: "Shyailla", kelas: "8E"}, {nama: "Kireina", kelas: "9C"}, {nama: "Felicia", kelas: "9I"}],
-            [{nama: "Alhena", kelas: "8F"}, {nama: "Assyifa", kelas: "9I"}, {nama: "Agata", kelas: "8D"}],
-            [{nama: "Ikhmal", kelas: "9H"}, {nama: "Nathania", kelas: "8E"}, {nama: "Angelina", kelas: "9G"}],
-            [{nama: "Atma", kelas: "8F"}, {nama: "Meilda", kelas: "9E"}, {nama: "Thalita", kelas: "9G"}],
-            [{nama: "Cesario", kelas: "8E"}, {nama: "Sheren", kelas: "9H"}, {nama: "Aulia", kelas: "9G"}],
-            [{nama: "Azzam", kelas: "8G"}, {nama: "Anindhita", kelas: "9F"}, {nama: "Syafa", kelas: "9G"}]
+            [{nama: "Alhena", kelas: "8F"}, {nama: "Assyifa", kelas: "9I"}, {nama: "Agata", kelas: "8D"}]
         ];
 
         let hariLiburSpesifik = [];
@@ -76,11 +72,6 @@
             const m = String(date.getMonth() + 1).padStart(2, '0');
             const d = String(date.getDate()).padStart(2, '0');
             return `${y}-${m}-${d}`;
-        }
-
-        function parseLocalYYYYMMDD(str) {
-            const parts = str.split('-');
-            return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 0, 0, 0, 0);
         }
 
         function isHariLibur(date) {
@@ -103,59 +94,40 @@
                 const dataSiklus = jadwalDoc.data().siklus;
                 if (typeof dataSiklus === 'string') {
                     jadwalSiklus = JSON.parse(dataSiklus);
-                } else if (Array.isArray(dataSiklus)) {
-                    jadwalSiklus = dataSiklus;
                 }
             }
             renderJadwal();
         });
 
         function hitungHariEfektif(targetDate) {
-            const totalSiklus = jadwalSiklus.length;
-            if (totalSiklus === 0) return -1;
-
-            const startDate = parseLocalYYYYMMDD(tanggalMulaiSiklus);
-            const target = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate(), 0, 0, 0, 0);
+            const startDate = new Date(tanggalMulaiSiklus);
+            startDate.setHours(0,0,0,0);
+            targetDate.setHours(0,0,0,0);
             
-            if (target < startDate) return -1;
-
             let current = new Date(startDate);
             let indexJadwal = 0;
 
-            while (current <= target) {
+            while (current <= targetDate) {
                 if (!liburDefault.includes(current.getDay())) {
                     indexJadwal++; 
                 }
                 current.setDate(current.getDate() + 1);
             }
-            if (indexJadwal <= 0) return -1;
-            return (indexJadwal - 1) % totalSiklus;
+            return (indexJadwal - 1) % (jadwalSiklus.length || 6);
         }
 
         function renderJadwal() {
             const now = new Date();
-            let targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+            let targetDate = new Date(now);
             let badgeText = 'Jadwal Hari Ini';
 
             if (now.getHours() >= 8) {
-                let tomorrow = new Date(targetDate);
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                
-                let checkDate = new Date(tomorrow);
-                let holidayCount = 0;
-                
-                while (isHariLibur(checkDate) && holidayCount <= 365) {
-                    holidayCount++;
-                    checkDate.setDate(checkDate.getDate() + 1);
-                }
-                
-                if (holidayCount <= 2) {
-                    targetDate = checkDate;
-                    badgeText = holidayCount === 0 ? 'Jadwal Besok' : 'Jadwal Selanjutnya';
-                } else {
-                    targetDate = tomorrow;
-                    badgeText = 'Jadwal Besok';
-                }
+                targetDate.setDate(now.getDate() + 1);
+                badgeText = 'Jadwal Selanjutnya';
+            }
+
+            while (isHariLibur(targetDate)) {
+                targetDate.setDate(targetDate.getDate() + 1);
             }
 
             const opsiTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
@@ -164,16 +136,6 @@
 
             const piketList = document.getElementById('piketList');
             piketList.innerHTML = '';
-
-            if (liburDefault.includes(targetDate.getDay())) {
-                piketList.innerHTML = '<li class="piket-item" style="color: #60a5fa; text-align: center; border-color: rgba(59,130,246,0.3);">Tidak Ada Jadwal<br><span class="class-badge" style="color: #60a5fa;">Hari Libur Rutin</span></li>';
-                return;
-            }
-
-            if (hariLiburSpesifik.includes(getLocalYYYYMMDD(targetDate))) {
-                piketList.innerHTML = '<li class="piket-item" style="color: #34d399; text-align: center; border-color: rgba(52,211,153,0.3);">Bonus Libur!<br><span class="class-badge" style="color: #6ee7b7;">Jadwal hari ini ditiadakan</span></li>';
-                return;
-            }
 
             if (jadwalSiklus.length === 0) {
                 piketList.innerHTML = '<li class="piket-item" style="text-align: center;">Jadwal belum diatur admin</li>';
