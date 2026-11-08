@@ -258,7 +258,9 @@ Piket salam ke seluruh siswa:
                 targetDate.setDate(targetDate.getDate() + 1);
             }
             const siswaHariIni = jadwalLokal[indexHariIni];
-            if(!siswaHariIni || siswaHariIni.length === 0) return alert("Jadwal kosong.");
+            if(!siswaHariIni || siswaHariIni.length === 0) {
+                    currentDate.setDate(currentDate.getDate() + 1);
+            }
 
             let listSiswa = "";
             siswaHariIni.forEach((s, idx) => { listSiswa += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`; });
