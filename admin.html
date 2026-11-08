@@ -71,7 +71,7 @@
         <!-- KARTU EDITOR TEMPLATE PENGUMUMAN -->
         <div class="card">
             <h3>Custom Template Pengumuman</h3>
-            <p style="font-size: 0.9rem; color: #94a3b8; margin-top: -5px; margin-bottom: 15px;">Edit template sesuai keinginan. Gunakan <code>{tanggal}</code> dan <code>{list_siswa}</code> sebagai variabel otomatis.</p>
+            <p style="font-size: 0.9rem; color: #94a3b8; margin-top: -5px; margin-bottom: 15px;">Edit template sesuai keinginan. Gunakan <code>{tanggal}</code> dan <code>{list_siswa}</code> sebagai variabel otomatis pada template per hari. Gunakan <code>{semua_jadwal_list</code> sebagai variabel otomatis pada template sekaligus.</code></p>
             
             <label style="font-size:0.85rem; color:#60a5fa; font-weight:600;">Template Per Hari:</label>
             <textarea id="templatePerHari">📢 *PENGUMUMAN*
@@ -242,10 +242,13 @@ Piket salam ke seluruh siswa:
         function cariTanggalTerdekatBerikutnya() {
             const now = new Date();
             let targetDate = new Date(now);
-            if (now.getHours() >= 8) {
+            if (now.getHours() >= 12) {
                 targetDate.setDate(targetDate.getDate() + 1);
             }
             while(isHariLibur(targetDate)) {
+                targetDate.setDate(targetDate.getDate() + 1);
+            }
+            while(indexHariIni < 0) {
                 targetDate.setDate(targetDate.getDate() + 1);
             }
             return targetDate;
@@ -254,8 +257,10 @@ Piket salam ke seluruh siswa:
         function salinPengumumanTerdekat() {
             const targetDate = cariTanggalTerdekatBerikutnya();
             const indexHariIni = hitungHariEfektif(targetDate);
+            if(indexHariIni < 0) return alert("Siklus belum dimulai!");
             
             const siswaHariIni = jadwalLokal[indexHariIni];
+            if(!siswaHariIni || siswaHariIni.length === 0) return alert("Jadwal kosong.");
 
             let listSiswa = "";
             siswaHariIni.forEach((s, idx) => { listSiswa += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`; });
