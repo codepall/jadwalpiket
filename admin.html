@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin</title>
+    <title>Panel Admin Premium</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg-deep: #020617; --glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08); --accent-blue: #3b82f6; --text-main: #f8fafc; }
@@ -71,7 +71,7 @@
         <!-- KARTU EDITOR TEMPLATE PENGUMUMAN -->
         <div class="card">
             <h3>Custom Template Pengumuman</h3>
-            <p style="font-size: 0.9rem; color: #94a3b8; margin-top: -5px; margin-bottom: 15px;">Edit template sesuai keinginan. Gunakan <code>{tanggal}</code> dan <code>{list_siswa}</code> sebagai variabel otomatis pada template per hari. Gunakan <code>{semua_jadwal_list}</code> sebagai variabel otomatis pada template sekaligus.</p>
+            <p style="font-size: 0.9rem; color: #94a3b8; margin-top: -5px; margin-bottom: 15px;">Edit template sesuai keinginan. Gunakan <code>{tanggal}</code> dan <code>{list_siswa}</code> sebagai variabel otomatis.</p>
             
             <label style="font-size:0.85rem; color:#60a5fa; font-weight:600;">Template Per Hari:</label>
             <textarea id="templatePerHari">📢 *PENGUMUMAN*
@@ -254,13 +254,10 @@ Piket salam ke seluruh siswa:
         function salinPengumumanTerdekat() {
             const targetDate = cariTanggalTerdekatBerikutnya();
             const indexHariIni = hitungHariEfektif(targetDate);
-            if(indexHariIni < 0) {
-                targetDate.setDate(targetDate.getDate() + 1);
-            }
+            if(indexHariIni < 0) return alert("Siklus belum dimulai!");
+            
             const siswaHariIni = jadwalLokal[indexHariIni];
-            if(!siswaHariIni || siswaHariIni.length === 0) {
-                    currentDate.setDate(currentDate.getDate() + 1);
-            }
+            if(!siswaHariIni || siswaHariIni.length === 0) return alert("Jadwal kosong.");
 
             let listSiswa = "";
             siswaHariIni.forEach((s, idx) => { listSiswa += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`; });
@@ -283,7 +280,7 @@ Piket salam ke seluruh siswa:
 
             for (let i = 0; i < jadwalLokal.length; i++) {
                 // Lewati hari libur saat merangkai jadwal sekaligus
-                while (isHariLibur(currentDate) || indexHariIni < 0) {
+                while (isHariLibur(currentDate)) {
                     currentDate.setDate(currentDate.getDate() + 1);
                 }
 
