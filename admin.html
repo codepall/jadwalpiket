@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin Premium</title>
+    <title>Panel Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg-deep: #020617; --glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08); --accent-blue: #3b82f6; --text-main: #f8fafc; }
@@ -225,17 +225,30 @@ Piket salam ke seluruh siswa:
             return liburDefault.includes(date.getDay()) || hariLiburSpesifik.includes(getLocalYYYYMMDD(date));
         }
 
+        // Menghitung indeks jadwal berdasarkan seluruh hari efektif.
+        // Hari libur mingguan dan tanggal merah khusus sama-sama dilewati.
         function hitungHariEfektif(targetDate) {
-            const startDate = new Date(tanggalMulaiSiklus);
-            startDate.setHours(0,0,0,0);
-            targetDate.setHours(0,0,0,0);
+            if (!jadwalLokal.length) return -1;
+
+            const startDate = new Date(tanggalMulaiSiklus + "T00:00:00");
+            const target = new Date(targetDate);
+            startDate.setHours(0, 0, 0, 0);
+            target.setHours(0, 0, 0, 0);
+
+            if (Number.isNaN(startDate.getTime()) ||
+                Number.isNaN(target.getTime()) ||
+                target < startDate) return -1;
+
             let current = new Date(startDate);
-            let indexJadwal = 0;
-            while (current <= targetDate) {
-                if (!liburDefault.includes(current.getDay())) indexJadwal++; 
+            let jumlahHariEfektif = 0;
+
+            while (current <= target) {
+                if (!isHariLibur(current)) jumlahHariEfektif++;
                 current.setDate(current.getDate() + 1);
             }
-            return (indexJadwal - 1) % (jadwalLokal.length || 10);
+
+            if (jumlahHariEfektif === 0) return -1;
+            return (jumlahHariEfektif - 1) % jadwalLokal.length;
         }
 
         // Cari tanggal efektif terdekat (maju terus sampai ketemu hari kerja/tidak libur)
@@ -252,64 +265,95 @@ Piket salam ke seluruh siswa:
         }
 
         function salinPengumumanTerdekat() {
+            if (!jadwalLokal.length) return alert("Belum ada jadwal piket.");
+
+            // Ambil tanggal piket efektif berikutnya, bukan sekadar menambah satu hari.
             const targetDate = cariTanggalTerdekatBerikutnya();
-            const indexHariIni = hitungHariEfektif(targetDate);
-            if(indexHariIni < 0) return alert("Siklus belum dimulai!");
-            
-            const siswaHariIni = jadwalLokal[indexHariIni];
-            if(!siswaHariIni || siswaHariIni.length === 0) return alert("Jadwal kosong.");
+            const indexJadwal = hitungHariEfektif(targetDate);
+            if (indexJadwal < 0) return alert("Tanggal awal siklus belum dimulai atau belum valid.");
 
-            let listSiswa = "";
-            siswaHariIni.forEach((s, idx) => { listSiswa += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`; });
+            const siswaHariIni = jadwalLokal[indexJadwal] || [];
+            if (siswaHariIni.length === 0) return alert("Jadwal untuk tanggal tersebut masih kosong.");
 
-            const opsiTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
+            const listSiswa = siswaHariIni
+                .map((s, idx) => `${idx + 1}. ${s.nama} ${String(s.kelas || "-").toUpperCase()}`)
+                .join("\n");
+
+            const opsiTanggal = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'Asia/Jakarta'
+            };
             const tanggalFormat = targetDate.toLocaleDateString('id-ID', opsiTanggal);
 
             let template = document.getElementById('templatePerHari').value;
-            template = template.replace("{tanggal}", tanggalFormat).replace("{list_siswa}", listSiswa.trim());
+            template = template
+                .replaceAll("{tanggal}", tanggalFormat)
+                .replaceAll("{list_siswa}", listSiswa);
 
             navigator.clipboard.writeText(template).then(() => {
-                alert("Pengumuman untuk " + tanggalFormat + " berhasil disalin!");
-            }).catch(() => alert("Gagal menyalin."));
+                alert("Pengumuman jadwal berikutnya, " + tanggalFormat + ", berhasil disalin!");
+            }).catch(() => alert("Gagal menyalin. Pastikan halaman dibuka melalui HTTPS."));
         }
 
-        // FITUR SALIN SEMUA JADWAL SEKALIGUS DENGAN TANGGAL
+        // FITUR SALIN SEMUA JADWAL SEKALIGUS.
+        // Menampilkan seluruh slot dalam satu siklus, dengan tanggal kalender
+        // yang benar. Hari libur mingguan dan tanggal merah khusus dilewati.
         function salinSemuaJadwalSekaligus() {
+            if (!jadwalLokal.length) return alert("Belum ada jadwal piket.");
+
             let currentDate = cariTanggalTerdekatBerikutnya();
-            let gabunganList = "";
+            const daftarJadwal = [];
+            let jumlahHariTerjadwal = 0;
+            let batasPencarian = 0;
+            const opsiTanggal = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'Asia/Jakarta'
+            };
 
-            for (let i = 0; i < jadwalLokal.length; i++) {
-                // Lewati hari libur saat merangkai jadwal sekaligus
-                while (isHariLibur(currentDate)) {
-                    currentDate.setDate(currentDate.getDate() + 1);
+            // Terus mencari tanggal efektif sampai semua slot siklus
+            // ditampilkan, termasuk bila jadwal melewati beberapa minggu.
+            while (jumlahHariTerjadwal < jadwalLokal.length && batasPencarian < 3660) {
+                if (!isHariLibur(currentDate)) {
+                    const indexSiklus = hitungHariEfektif(currentDate);
+                    if (indexSiklus >= 0) {
+                        const siswaArr = jadwalLokal[indexSiklus] || [];
+                        const tglStr = currentDate.toLocaleDateString('id-ID', opsiTanggal);
+                        let bagian = `📅 *${tglStr}*\n`;
+
+                        if (siswaArr.length > 0) {
+                            siswaArr.forEach((s, idx) => {
+                                bagian += `${idx + 1}. ${s.nama} ${String(s.kelas || "-").toUpperCase()}\n`;
+                            });
+                        } else {
+                            bagian += `- (Tidak ada petugas)\n`;
+                        }
+
+                        daftarJadwal.push(bagian.trim());
+                        jumlahHariTerjadwal++;
+                    }
                 }
 
-                const indexSiklus = hitungHariEfektif(currentDate);
-                const siswaArr = jadwalLokal[indexSiklus];
-
-                const opsiTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
-                const tglStr = currentDate.toLocaleDateString('id-ID', opsiTanggal);
-
-                gabunganList += `📅 *${tglStr}*\n`;
-                if (siswaArr && siswaArr.length > 0) {
-                    siswaArr.forEach((s, idx) => {
-                        gabunganList += `${idx + 1}. ${s.nama} ${s.kelas.toUpperCase()}\n`;
-                    });
-                } else {
-                    gabunganList += `- (Tidak ada petugas)\n`;
-                }
-                gabunganList += `\n`;
-
-                // Maju ke hari berikutnya untuk iterasi selanjutnya
                 currentDate.setDate(currentDate.getDate() + 1);
+                batasPencarian++;
             }
 
+            if (jumlahHariTerjadwal === 0) {
+                return alert("Tidak ditemukan tanggal jadwal yang dapat diumumkan. Periksa tanggal awal siklus dan pengaturan hari libur.");
+            }
+
+            const gabunganList = daftarJadwal.join("\n\n");
             let template = document.getElementById('templateSekaligus').value;
-            template = template.replace("{semua_jadwal_list}", gabunganList.trim());
+            template = template.replace("{semua_jadwal_list}", gabunganList);
 
             navigator.clipboard.writeText(template).then(() => {
-                alert("Seluruh jadwal lengkap dengan tanggal berhasil disalin!");
-            }).catch(() => alert("Gagal menyalin."));
+                alert(`${jumlahHariTerjadwal} jadwal untuk seluruh siklus berhasil disalin!`);
+            }).catch(() => alert("Gagal menyalin. Pastikan halaman dibuka melalui HTTPS."));
         }
 
         // FITUR TAMBAH & KURANGI HARI PIKET
