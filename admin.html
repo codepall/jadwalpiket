@@ -254,7 +254,6 @@ Piket salam ke seluruh siswa:
         function salinPengumumanTerdekat() {
             const targetDate = cariTanggalTerdekatBerikutnya();
             const indexHariIni = hitungHariEfektif(targetDate);
-            if(indexHariIni < 0) return alert("Siklus belum dimulai!");
             
             const siswaHariIni = jadwalLokal[indexHariIni];
             if(!siswaHariIni || siswaHariIni.length === 0) return alert("Jadwal kosong.");
