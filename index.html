@@ -78,6 +78,11 @@
             return `${y}-${m}-${d}`;
         }
 
+        function parseLocalYYYYMMDD(str) {
+            const parts = str.split('-');
+            return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 0, 0, 0, 0);
+        }
+
         function isHariLibur(date) {
             return liburDefault.includes(date.getDay()) || hariLiburSpesifik.includes(getLocalYYYYMMDD(date));
         }
@@ -94,46 +99,52 @@
             }
             liburSnapshot.forEach(doc => hariLiburSpesifik.push(doc.id));
             
-            // LOGIKA PEMBACAAN DATA JADWAL YANG BENAR
             if (jadwalDoc.exists && jadwalDoc.data().siklus) {
                 const dataSiklus = jadwalDoc.data().siklus;
                 if (typeof dataSiklus === 'string') {
                     jadwalSiklus = JSON.parse(dataSiklus);
+                } else if (Array.isArray(dataSiklus)) {
+                    jadwalSiklus = dataSiklus;
                 }
             }
             renderJadwal();
         });
 
         function hitungHariEfektif(targetDate) {
-            const startDate = new Date(tanggalMulaiSiklus);
-            startDate.setHours(0,0,0,0);
-            targetDate.setHours(0,0,0,0);
+            const totalSiklus = jadwalSiklus.length;
+            if (totalSiklus === 0) return -1;
+
+            const startDate = parseLocalYYYYMMDD(tanggalMulaiSiklus);
+            const target = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate(), 0, 0, 0, 0);
             
+            if (target < startDate) return -1;
+
             let current = new Date(startDate);
             let indexJadwal = 0;
 
-            while (current <= targetDate) {
+            while (current <= target) {
                 if (!liburDefault.includes(current.getDay())) {
                     indexJadwal++; 
                 }
                 current.setDate(current.getDate() + 1);
             }
-            return (indexJadwal - 1) % (jadwalSiklus.length || 10);
+            if (indexJadwal <= 0) return -1;
+            return (indexJadwal - 1) % totalSiklus;
         }
 
         function renderJadwal() {
             const now = new Date();
-            let targetDate = new Date(now);
+            let targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
             let badgeText = 'Jadwal Hari Ini';
 
             if (now.getHours() >= 8) {
-                let tomorrow = new Date(now);
-                tomorrow.setDate(now.getDate() + 1);
+                let tomorrow = new Date(targetDate);
+                tomorrow.setDate(tomorrow.getDate() + 1);
                 
                 let checkDate = new Date(tomorrow);
                 let holidayCount = 0;
                 
-                while (isHariLibur(checkDate)) {
+                while (isHariLibur(checkDate) && holidayCount <= 365) {
                     holidayCount++;
                     checkDate.setDate(checkDate.getDate() + 1);
                 }
